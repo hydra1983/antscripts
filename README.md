@@ -2,7 +2,7 @@ Usage:
 
 ```xml
 <project default="build">
-  <property name="SCRIPTS_BASE" value="https://raw.github.com/hydra1983/antscripts/master" />
+    <property name="SCRIPTS_BASE" value="https://raw.github.com/hydra1983/antscripts/master" />
 
 	<import>
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml"/>
