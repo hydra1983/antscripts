@@ -1,0 +1,68 @@
+<project name="rsync">
+	<import>
+		<url url="${SCRIPTS_BASE}/linux/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<macrodef name="rsync">
+		<attribute name="from" />
+		<attribute name="to" />
+		<attribute name="direction" default="up" 
+			description="up(local to remote) | down(remote to local) | none(defined by user)"/>
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="options"
+		           default="-rthczv --progress --delete --stats" />
+		<attribute name="sudo" default="false"/>
+		<sequential>
+			<switch value="@{direction}">
+				<case value="up">
+					<var name="realFrom" value="@{from}"/>
+					<var name="realTo" value="${hostUsername}@${hostIP}:@{to}"/>
+				</case>
+				<case value="down">
+					<var name="realFrom" value="${hostUsername}@${hostIP}:@{from}"/>
+					<var name="realTo" value="@{to}"/>
+				</case>
+				<case value="none">
+					<var name="realFrom" value="@{from}"/>
+					<var name="realTo" value="@{to}"/>
+				</case>
+			</switch>
+
+			<echo message="sync from '${realFrom}' to '${realTo}'" />
+
+			<var name="rsyncOpts"
+			     value="${realFrom} ${realTo}" />
+			<var name="opts" value="-p ${hostSSHPort}" />
+
+			<if>
+				<isset_ property="proxyCommand" />
+				<then>
+					<var name="opts" value="${proxyCommand} ${opts}" />
+				</then>
+			</if>
+
+			<if>
+				<isset_ property="hostKeyFile" />
+				<then>
+					<var name="cmd"
+					     value="rsync @{options} --rsh=&quot;ssh -i ${hostKeyFile} ${opts}&quot; ${rsyncOpts}" />
+				</then>
+				<else>
+					<var name="cmd"
+					     value="rsync @{options} --rsh=&quot;sshpass -p ${hostPassword} ssh ${opts}&quot; ${rsyncOpts}" />
+				</else>
+			</if>
+			
+			<if>
+				<istrue value="@{sudo}"/>
+				<then>
+					<sudo exec="${cmd}" dir="@{dir}"/>
+				</then>
+				<else>
+					<run exec="${cmd}" dir="@{dir}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+</project>

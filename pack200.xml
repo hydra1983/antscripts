@@ -1,0 +1,12 @@
+<project name="xml">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<get src="${SCRIPTS_LIB_BASE}/deployment-ant-pack200-${deployment-ant-pack200.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/deployment-ant-pack200-${deployment-ant-pack200.version}.jar"
+	     usetimestamp="true" />
+
+	<typedef resource="org/jdesktop/deployment/ant/pack200/antlib.xml" 
+		classpath="${SCRIPTS_TMP_DIR}/deployment-ant-pack200-${deployment-ant-pack200.version}.jar"/>
+</project>

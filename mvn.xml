@@ -1,0 +1,443 @@
+<project name="mvn">
+	<import>
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+		<url url="${SCRIPTS_BASE}/string.xml" />
+		<url url="${SCRIPTS_BASE}/uuid.xml" />
+		<url url="${SCRIPTS_BASE}/file.xml" />
+	</import>
+
+	<property name="M2_HOME" value="${env.M2_HOME}" />
+
+	<macrodef name="mvn">
+		<element name="args" implicit="true" />
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="failonerror" default="true" />
+		<sequential>
+			<var name="exec" value="mvn" />
+			<if>
+				<equals arg1="${osfamily}" arg2="windows" />
+				<then>
+					<var name="exec" value="mvn.bat" />
+				</then>
+			</if>
+			<exec executable="${M2_HOME}/bin/${exec}"
+			      dir="@{dir}"
+			      failonerror="@{failonerror}">
+				<args />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="download-artifacts">
+		<attribute name="outputdir" default="${basedir}" />
+		<attribute name="dryrun" default="false" />
+		<attribute name="overwrite" default="false" />
+		<attribute name="tmpdir" default="${env.TMP}" />
+		<attribute name="dir" default="${basedir}/target" />
+		<attribute name="quiet" default="true" />
+		<attribute name="artifact" default="" />
+		<attribute name="artifactFile" default="" />
+		<attribute name="failonerror" default="true" />
+		<attribute name="debug" default="false" />
+		<text name="artifacts" trim="true" optional="true" />
+		<element name="artifactFiles" implicit="true" optional="true" />
+		<sequential>
+			<var name="vArtifacts" value="" />
+
+			<if>
+				<equals arg1="${vArtifacts}" arg2="" trim="true" />
+				<then>
+					<local name="artifactFilesContent" />
+					<trycatch>
+						<try>
+							<loadfiles property="artifactFilesContent"
+					           tmpdir="@{tmpdir}"
+					           failonerror="false">
+								<artifactFiles />
+							</loadfiles>
+
+							<var name="vArtifacts" value="${artifactFilesContent}" />
+						</try>
+						<catch/>
+					</trycatch>
+				</then>
+			</if>
+
+			<if>
+				<and>
+					<equals arg1="${vArtifacts}" arg2="" trim="true" />
+					<not>
+						<equals arg1="@{artifactFile}" arg2="" />
+					</not>
+					<resourceexists>
+						<file file="@{artifactFile}" />
+					</resourceexists>
+				</and>
+				<then>
+					<local name="artifactFileContent" />
+					<loadfile srcfile="@{artifactFile}"
+					          property="artifactFileContent"
+					          failonerror="@{failonerror}" />
+					<var name="vArtifacts" value="${artifactFileContent}" />
+				</then>
+			</if>
+
+			<if>
+				<equals arg1="${vArtifacts}" arg2="" trim="true" />
+				<then>
+					<var name="vArtifacts" value="@{artifacts}" />
+				</then>
+			</if>
+
+			<if>
+				<equals arg1="${vArtifacts}" arg2="" trim="true" />
+				<then>
+					<var name="vArtifacts" value="@{artifact}" />
+				</then>
+			</if>
+
+			<if>
+				<equals arg1="${vArtifacts}" arg2="" trim="true" />
+				<then>
+					<fail message="Cannot find artifacts to download" />
+				</then>
+			</if>
+
+			<var name="vCopyDependencies" value="" />
+			<var name="vUnpackDependencies" value="" />
+
+			<for list="${vArtifacts}"
+			     delimiter="${line.separator}"
+			     param="pArtifact">
+				<sequential>
+					<local name="trimedArtifact" />
+					<trim input="@{pArtifact}" property="trimedArtifact" />
+					<if>
+						<and_>
+							<not_>
+								<equals arg1="${trimedArtifact}" arg2="" />
+							</not_>
+							<not_>
+								<startswith string="${trimedArtifact}"
+								            with="#" />
+							</not_>
+						</and_>
+						<then>
+							<var name="vOriginDef" value="${trimedArtifact}" />
+							<var name="vGroupId" value="" />
+							<var name="vArtifactId" value="" />
+							<var name="vVersion" value="" />
+							<var name="vType" value="" />
+							<var name="vClassifier" value="" />
+							<var name="vOverwrite" value="@{overwrite}" />
+							<var name="vOutputdir" value="" />
+							<var name="vDestFile" value="" />
+							<var name="vFinalName" value="" />
+
+							<var name="vI" value="0" />
+							<for list="${vOriginDef}"
+							     delimiter=";"
+							     param="pValue"
+							     trim="true">
+								<sequential>
+									<switch value="${vI}">
+										<case value="0">
+											<var name="vArtifactDef"
+											     value="@{pValue}" />
+											<var name="vJ" value="0" />
+											<for list="${vArtifactDef}"
+											     delimiter=":"
+											     param="pDefValue"
+											     trim="true">
+												<sequential>
+													<switch value="${vJ}">
+														<case value="0">
+															<var name="vGroupId"
+															     value="@{pDefValue}" />
+														</case>
+														<case value="1">
+															<var name="vArtifactId"
+															     value="@{pDefValue}" />
+														</case>
+														<case value="2">
+															<var name="vVersion"
+															     value="@{pDefValue}" />
+														</case>
+														<case value="3">
+															<var name="vType"
+															     value="@{pDefValue}" />
+														</case>
+														<case value="4">
+															<var name="vClassifier"
+															     value="@{pDefValue}" />
+														</case>
+													</switch>
+
+													<var name="vFinalName"
+													     value="${vArtifactId}-${vVersion}.${vType}" />
+													<if>
+														<not>
+															<equals arg1="${vClassifier}"
+															        arg2="" />
+														</not>
+														<then>
+															<var name="vFinalName"
+															     value="${vArtifactId}-${vVersion}-${vClassifier}.${vType}" />
+														</then>
+													</if>
+													<math operation="+"
+													      operand1="${vJ}"
+													      operand2="1"
+													      result="vJ"
+													      datatype="int" />
+												</sequential>
+											</for>
+											<var name="vArtifactDef"
+											     unset="true" />
+											<var name="vJ" unset="true" />
+										</case>
+										<case value="1">
+											<var name="vOutputdir"
+											     value="@{pValue}" />
+										</case>
+										<case value="2">
+											<var name="vDestFile"
+											     value="@{pValue}" />
+										</case>
+									</switch>
+
+									<math operation="+"
+									      operand1="${vI}"
+									      operand2="1"
+									      result="vI"
+									      datatype="int" />
+								</sequential>
+							</for>
+
+							<if>
+								<equals arg1="${vOutputdir}" arg2="" />
+								<then>
+									<var name="vOutputdir"
+									     value="@{outputdir}" />
+								</then>
+							</if>
+
+							<local name="typeLowerCase" />
+							<toLowerCase input="${vType}"
+							             property="typeLowerCase" />
+
+							<if>
+								<or>
+									<equals arg1="${typeLowerCase}"
+									        arg2="zip" />
+									<equals arg1="${typeLowerCase}"
+									        arg2="war" />
+								</or>
+								<then>
+									<var name="vDestFile" value="" />
+								</then>
+								<else>
+									<if>
+										<equals arg1="${vDestFile}" arg2="" />
+										<then>
+											<var name="vDestFile"
+											     value="${vFinalName}" />
+										</then>
+									</if>
+								</else>
+							</if>
+
+							<local name="artifactItem" />
+							<loadresource property="artifactItem">
+								<url url="${SCRIPTS_BASE}/mvn/dependencies.artifact.tpl" />
+								<filterchain>
+									<tokenfilter>
+										<replacestring from="@%{groupId}"
+										               to="${vGroupId}" />
+										<replacestring from="@%{artifactId}"
+										               to="${vArtifactId}" />
+										<replacestring from="@%{version}"
+										               to="${vVersion}" />
+										<replacestring from="@%{type}"
+										               to="${vType}" />
+										<replacestring from="@%{classifier}"
+										               to="${vClassifier}" />
+										<replacestring from="@%{overwrite}"
+										               to="${vOverwrite}" />
+										<replacestring from="@%{outputdir}"
+										               to="${vOutputdir}" />
+										<replacestring from="@%{destfile}"
+										               to="${vDestFile}" />
+									</tokenfilter>
+								</filterchain>
+							</loadresource>
+
+							<if>
+								<or>
+									<equals arg1="${typeLowerCase}"
+									        arg2="zip" />
+									<equals arg1="${typeLowerCase}"
+									        arg2="war" />
+								</or>
+								<then>
+									<var name="vUnpackDependencies"
+									     value="${vUnpackDependencies}${line.separator}${artifactItem}" />
+								</then>
+								<else>
+									<var name="vCopyDependencies"
+									     value="${vCopyDependencies}${line.separator}${artifactItem}" />
+								</else>
+							</if>
+
+							<var name="vOriginDef" unset="true" />
+							<var name="VGroupId" unset="true" />
+							<var name="vArtifactId" unset="true" />
+							<var name="vVersion" unset="true" />
+							<var name="vType" unset="true" />
+							<var name="vClassifier" unset="true" />
+							<var name="vOverwrite" unset="true" />
+							<var name="vOutputdir" unset="true" />
+							<var name="vDestfile" unset="true" />
+							<var name="vFinalName" unset="true" />
+
+							<var name="vI" unset="true" />
+						</then>
+					</if>
+				</sequential>
+			</for>
+
+			<local name="copyExec" />
+			<if>
+				<not>
+					<equals arg1="${vCopyDependencies}" arg2="" />
+				</not>
+				<then>
+					<loadresource property="copyExec">
+						<url url="${SCRIPTS_BASE}/mvn/dependencies.exec.tpl" />
+						<filterchain>
+							<tokenfilter>
+								<replacestring from="@%{action}" to="copy" />
+								<replacestring from="@%{dependencies}"
+								               to="${vCopyDependencies}" />
+							</tokenfilter>
+						</filterchain>
+					</loadresource>
+				</then>
+			</if>
+
+			<local name="unpackExec" />
+			<if>
+				<not>
+					<equals arg1="${vUnpackDependencies}" arg2="" />
+				</not>
+				<then>
+					<loadresource property="unpackExec">
+						<url url="${SCRIPTS_BASE}/mvn/dependencies.exec.tpl" />
+						<filterchain>
+							<tokenfilter>
+								<replacestring from="@%{action}" to="unpack" />
+								<replacestring from="@%{dependencies}"
+								               to="${vUnpackDependencies}" />
+							</tokenfilter>
+						</filterchain>
+					</loadresource>
+				</then>
+			</if>
+
+			<var name="vExecs" value="" />
+
+			<if>
+				<isset property="unpackExec" />
+				<then>
+					<var name="vExecs"
+					     value="${vExecs}${line.separator}${unpackExec}" />
+				</then>
+			</if>
+
+			<if>
+				<isset property="copyExec" />
+				<then>
+					<var name="vExecs"
+					     value="${vExecs}${line.separator}${copyExec}" />
+				</then>
+			</if>
+
+			<if>
+				<not>
+					<equals arg1="${vExecs}" arg2="" />
+				</not>
+				<then>
+					<var name="vQuiet" value="" />
+					<local name="quietLowerCase" />
+					<toLowerCase input="@{quiet}" property="quietLowerCase" />
+
+					<var name="vDryrun" value="" />
+					<local name="dryrunLowerCase" />
+					<toLowerCase input="@{dryrun}" property="dryrunLowerCase" />
+
+					<mkdir dir="@{tmpdir}" />
+
+					<local name="uuid" />
+					<uuid property="uuid" />
+
+					<local name="pomFile" />
+					<property name="pomFile" value="@{tmpdir}/${uuid}" />
+
+					<get src="${SCRIPTS_BASE}/mvn/dependencies.tpl"
+					     dest="${pomFile}" />
+
+					<replace file="${pomFile}">
+						<replacefilter token="@%{executions}"
+						               value="${vExecs}" />
+					</replace>
+
+					<if>
+						<equals arg1="${dryrunLowerCase}" arg2="false" />
+						<then>
+							<trycatch>
+								<try>
+									<if>
+										<equals arg1="${quietLowerCase}" arg2="true" />
+										<then>
+											<mvn dir="@{dir}"
+												 failonerror="@{failonerror}">
+												<arg value="generate-resources" />
+												<arg value="-q" />
+												<arg value="-f" />
+												<arg value="${pomFile}" />
+											</mvn>
+										</then>
+										<else>
+											<mvn dir="@{dir}"
+												 failonerror="@{failonerror}">
+												<arg value="generate-resources" />
+												<arg value="-f" />
+												<arg value="${pomFile}" />
+											</mvn>
+										</else>
+									</if>									
+								</try>
+								<finally>
+									<if>
+										<isfalse value="@{debug}"/>
+										<then>
+											<delete file="${pomFile}" />
+										</then>
+									</if>
+								</finally>
+							</trycatch>
+						</then>
+					</if>
+
+					<var name="vQuiet" unset="true" />
+					<var name="vDryrun" unset="true" />
+				</then>
+			</if>
+
+			<var name="vArtifacts" unset="true" />
+			<var name="vCopyDependencies" unset="true" />
+			<var name="vUnpackDependencies" unset="true" />
+			<var name="vExecs" unset="true" />
+		</sequential>
+	</macrodef>
+</project>

@@ -1,0 +1,28 @@
+<project name="shell">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<macrodef name="run">
+		<attribute name="exec" />
+		<attribute name="dir" default="${basedir}" />
+		<sequential>
+			<exec executable="/bin/bash" failonerror="true" dir="@{dir}">
+				<arg value="-c" />
+				<arg value="@{exec}" />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="sudo">
+		<attribute name="exec" />
+		<attribute name="dir" default="${basedir}" />
+		<sequential>
+			<exec executable="sudo" failonerror="true" dir="@{dir}">
+				<arg value="/bin/bash" />
+				<arg value="-c" />
+				<arg value="@{exec}" />
+			</exec>
+		</sequential>
+	</macrodef>
+</project>

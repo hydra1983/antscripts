@@ -1,0 +1,23 @@
+<project name="flaka"
+         xmlns:fl="antlib:it.haefelinger.flaka"
+         xmlns:prop="antlib:it.haefelinger.flaka.prop">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<get src="${SCRIPTS_LIB_BASE}/ant-flaka-${ant-flaka.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/ant-flaka-${ant-flaka.version}.jar"
+	     usetimestamp="true" />
+
+	<taskdef uri="antlib:it.haefelinger.flaka"
+	         resource="it/haefelinger/flaka/antlib.xml"
+	         classpath="${SCRIPTS_TMP_DIR}/ant-flaka-${ant-flaka.version}.jar" />
+
+	<taskdef uri="antlib:it.haefelinger.flaka.prop"
+	         resource="it/haefelinger/flaka/prop/antlib.xml"
+	         classpath="${SCRIPTS_TMP_DIR}/ant-flaka-${ant-flaka.version}.jar" />
+
+	<propertyhelper>
+		<prop:elreferences />
+	</propertyhelper >
+</project>

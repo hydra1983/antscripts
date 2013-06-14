@@ -1,0 +1,2 @@
+A property should be set before import
+	<property name="SCRIPTS_BASE" value="http://192.168.1.110/svn/antscripts/"/>

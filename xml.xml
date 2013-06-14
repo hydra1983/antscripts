@@ -1,0 +1,13 @@
+<project name="xml">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<get src="${SCRIPTS_LIB_BASE}/xmltask-${xmltask.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/xmltask-${xmltask.version}.jar"
+	     usetimestamp="true" />
+
+	<taskdef name="xml"
+	         classname="com.oopsconsultancy.xmltask.ant.XmlTask"
+	         classpath="${SCRIPTS_TMP_DIR}/xmltask-${xmltask.version}.jar" />
+</project>
