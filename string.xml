@@ -2,7 +2,15 @@
 	<import>
 		<url url="${SCRIPTS_BASE}/core.xml" />
 	</import>
-
+	
+	<!-- 
+	Description : 
+		Convert a string to upper case.
+	For Example :
+		My Property -> MY PROPERTY
+		myProperty -> MYPROPERTY
+		my-property -> MY-PROPERTY
+	-->
 	<scriptdef language="javascript" name="toUpperCase">
 		<attribute name="input" />
 		<attribute name="property" />
@@ -11,7 +19,15 @@
 				attributes.get( "input" ).toUpperCase() );
 		]]>
 	</scriptdef>
-
+	
+	<!-- 
+	Description : 
+		Convert a string to lower case.
+	For Example :
+		My Property -> my property
+		myProperty -> myproperty
+		MY-PROPERTY -> my-property
+	-->
 	<scriptdef language="javascript" name="toLowerCase">
 		<attribute name="input" />
 		<attribute name="property" />
@@ -21,6 +37,13 @@
 		]]>
 	</scriptdef>
 
+	<!-- 
+	Description : 
+		Convert the first letter of a string to upper case.
+	For Example :
+		myProperty -> MyProperty
+		my property -> My property
+	-->
 	<scriptdef language="javascript" name="capitalize">
 		<attribute name="input" />
 		<attribute name="property" />
@@ -31,6 +54,13 @@
 		]]>
 	</scriptdef>
 
+	<!-- 
+	Description : 
+		Convert the first letter of a string to lower case.
+	For Example :
+		MyProperty -> myProperty
+		My property -> my property
+	-->
 	<scriptdef language="javascript" name="uncapitalize">
 		<attribute name="input" />
 		<attribute name="property" />
@@ -41,6 +71,14 @@
 		]]>
 	</scriptdef>
 
+	<!-- 
+	Description : 
+		Convert the first letter of the words in a string to upper case, and the left 
+		to lower case.
+	For Example :
+		my property -> My Property
+		mY pRoPeRTy -> My Property
+	-->
 	<scriptdef language="javascript" name="titleize">
 		<attribute name="input" />
 		<attribute name="property" />
@@ -52,6 +90,12 @@
 		]]>
 	</scriptdef>
 
+	<!-- 
+	Description : 
+		Convert a string in camel case to be conjuncted with hyphens.
+	For Example :
+		myProperty -> my-property
+	-->
 	<scriptdef language="javascript" name="hyphenate">
 		<attribute name="input" />
 		<attribute name="property" />
@@ -61,23 +105,53 @@
 		            s.replace( /([a-z])([A-Z])/g, "$1-$2").toLowerCase() );
 		]]>
 	</scriptdef>
+	
+	<!-- 
+	Description : 
+		Convert a string in camel case to be conjuncted with underscores.
+	For Example :
+		myProperty -> my_property
+	-->
+	<scriptdef language="javascript" name="underscore">
+		<attribute name="input" />
+		<attribute name="property" />
+		<![CDATA[
+		 	var s = new String( attributes.get( "input" ) );
+		    project.setProperty( attributes.get( "property" ),
+		            s.replace( /([a-z])([A-Z])/g, "$1_$2").toLowerCase() );
+		]]>
+	</scriptdef>
 
+	<!-- 
+	Description : 
+		Convert a string conjuncted with hyphens or underscores to camel case.
+	For Example :
+		my-property -> myProperty
+		my_property -> myProperty
+	-->
 	<scriptdef language="javascript" name="camelcase">
 		<attribute name="input" />
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
 		    project.setProperty( attributes.get( "property" ),
-		            s.replace( /-([a-z])/g, function(g){ return g[1].toUpperCase()}) );
+		            s.replace( /(-|_)([a-z])/g, function(g){ return g[1].toUpperCase()}) );
 		]]>
 	</scriptdef>
-
+	
+	<!-- 
+	Description : 
+		Remove tabs and white spaces from the beginning and ending of a string.
+	For Example :
+		my-property -> myProperty
+		my_property -> myProperty
+	-->
 	<scriptdef language="javascript" name="trim">
 		<attribute name="input" />
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-		 	s = s.replace(/\t|\s/g, "");
+		 	s = s.replace(/^(\s|\t)+|(\s|\t)+$/g, "");
 		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
