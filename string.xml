@@ -104,7 +104,7 @@
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-			s = s.replace(/([a-z])([A-Z])/g, function(g){ return g[1] + "-" + g[2]});
+			s = s.replace(/([a-z])([A-Z])/g, "$1_$2");
 			s = s.toLowerCase();
 			s = s.replace(/_/g, "-");
 		    project.setProperty( attributes.get( "property" ),s);
