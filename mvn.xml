@@ -36,10 +36,11 @@
 		<attribute name="dir" default="${basedir}/target" />
 		<attribute name="quiet" default="true" />
 		<attribute name="artifact" default="" />
+		<attribute name="artifacts" default="" />
 		<attribute name="artifactFile" default="" />
 		<attribute name="failonerror" default="true" />
 		<attribute name="debug" default="false" />
-		<text name="artifacts" trim="true" optional="true" />
+		<text name="artifactsText" trim="true" optional="true" />
 		<element name="artifactFiles" implicit="true" optional="true" />
 		<sequential>
 			<var name="vArtifacts" value="" />
@@ -82,6 +83,13 @@
 				</then>
 			</if>
 
+			<if>
+				<equals arg1="${vArtifacts}" arg2="" trim="true" />
+				<then>
+					<var name="vArtifacts" value="@{artifactsText}" />
+				</then>
+			</if>
+			
 			<if>
 				<equals arg1="${vArtifacts}" arg2="" trim="true" />
 				<then>
