@@ -92,23 +92,29 @@
 
 	<!-- 
 	Description : 
-		Convert a string in camel case to be conjuncted with hyphens.
+		Convert a string in camel case or conjuncted with underscores 
+		to be lower cased and conjuncted with hyphens.
 	For Example :
 		myProperty -> my-property
+		my_Property -> my-property
+		My_PropertyTwo -> my-property-two
 	-->
 	<scriptdef language="javascript" name="hyphenate">
 		<attribute name="input" />
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-		    project.setProperty( attributes.get( "property" ),
-		            s.replace( /([a-z])([A-Z])/g, "$1-$2").toLowerCase() );
+			s = s.replace(/([a-z])([A-Z])/g, function(g){ return g[1] + "-" + g[2]});
+			s = s.toLowerCase();
+			s = s.replace(/_/g, "-");
+		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
 	
 	<!-- 
 	Description : 
-		Convert a string in camel case to be conjuncted with underscores.
+		Convert a string in camel case or conjuncted with hyphens 
+		to be lower cased and conjuncted with underscores.
 	For Example :
 		myProperty -> my_property
 	-->
@@ -117,8 +123,10 @@
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-		    project.setProperty( attributes.get( "property" ),
-		            s.replace( /([a-z])([A-Z])/g, "$1_$2").toLowerCase() );
+			s = s.replace( /([a-z])([A-Z])/g, "$1_$2");
+			s = s.toLowerCase();
+			s = s.replace(/-/g, "_");
+		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
 
