@@ -101,7 +101,6 @@
 		"My Property" 			-> my-property
 		"My    Property" 		-> my-property
 		"My			Property" 	-> my-property
-		"My++()!&*Property"		-> my-property
 	-->
 	<scriptdef language="javascript" name="hyphenate">
 		<attribute name="input" />
@@ -109,7 +108,7 @@
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
 			s = s.replace( /([a-z])([A-Z])/g, "$1-$2");
-			s = s.replace(/[^a-zA-Z0-9-]+/g,"-");
+			s = s.replace(/(\s|\t|_)+/g,"-");
 			s = s.replace(/-+/g,"-");
 			s = s.toLowerCase();
 		    project.setProperty( attributes.get( "property" ),s);
@@ -127,7 +126,6 @@
 		"My Property" 			-> my_property
 		"My    Property" 		-> my_property
 		"My			Property" 	-> my_property
-		"My++()!&*Property"		-> my_property
 	-->
 	<scriptdef language="javascript" name="underscore">
 		<attribute name="input" />
@@ -135,7 +133,7 @@
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
 			s = s.replace( /([a-z])([A-Z])/g, "$1_$2");
-			s = s.replace(/[^a-zA-Z0-9_]+/g,"_");
+			s = s.replace(/(\s|\t|-)+/g,"_");
 			s = s.replace(/_+/g,"_");
 			s = s.toLowerCase();
 		    project.setProperty( attributes.get( "property" ),s);
@@ -152,14 +150,13 @@
 		"My Property" 			-> myProperty
 		"My    Property" 		-> myProperty
 		"My			Property" 	-> myProperty
-		"my++()!&*property"		-> myProperty
 	-->
 	<scriptdef language="javascript" name="camelcase">
 		<attribute name="input" />
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-			s = s.replace(/[^a-zA-Z0-9]+/g,"-");
+			s = s.replace(/(\s|\t|_)+/g,"-");
 			s = s.replace(/-([^-])/g, function(g){ return g[1].toUpperCase(); });
 		    project.setProperty( attributes.get( "property" ),s);
 		]]>
