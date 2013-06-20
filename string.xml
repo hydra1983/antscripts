@@ -92,31 +92,42 @@
 
 	<!-- 
 	Description : 
-		Convert a string in camel case or conjuncted with underscores 
-		to be lower cased and conjuncted with hyphens.
+		Convert a string to lower case and conjuncted with hyphens.
+		Eat all chars not letters or numbers or hyphen.
 	For Example :
-		myProperty -> my-property
-		my_Property -> my-property
-		My_PropertyTwo -> my-property-two
+		"myProperty" 			-> my-property
+		"my_Property" 			-> my-property
+		"My_PropertyTwo" 		-> my-property-two
+		"My Property" 			-> my-property
+		"My    Property" 		-> my-property
+		"My			Property" 	-> my-property
+		"My++()!&*Property"		-> my-property
 	-->
 	<scriptdef language="javascript" name="hyphenate">
 		<attribute name="input" />
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-			s = s.replace(/([a-z])([A-Z])/g, "$1_$2");
+			s = s.replace( /([a-z])([A-Z])/g, "$1-$2");
+			s = s.replace(/[^a-zA-Z0-9-]+/g,"-");
+			s = s.replace(/-+/g,"-");
 			s = s.toLowerCase();
-			s = s.replace(/_/g, "-");
 		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
 	
 	<!-- 
 	Description : 
-		Convert a string in camel case or conjuncted with hyphens 
-		to be lower cased and conjuncted with underscores.
+		Convert a string to lower case and conjuncted with underscores.
+		Eat all chars not letters or numbers or underscore.
 	For Example :
-		myProperty -> my_property
+		"myProperty" 			-> my_property
+		"my-Property" 			-> my-property
+		"My-PropertyTwo" 		-> my_property_two
+		"My Property" 			-> my_property
+		"My    Property" 		-> my_property
+		"My			Property" 	-> my_property
+		"My++()!&*Property"		-> my_property
 	-->
 	<scriptdef language="javascript" name="underscore">
 		<attribute name="input" />
@@ -124,26 +135,33 @@
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
 			s = s.replace( /([a-z])([A-Z])/g, "$1_$2");
+			s = s.replace(/[^a-zA-Z0-9_]+/g,"_");
+			s = s.replace(/_+/g,"_");
 			s = s.toLowerCase();
-			s = s.replace(/-/g, "_");
 		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
 
 	<!-- 
 	Description : 
-		Convert a string conjuncted with hyphens or underscores to camel case.
+		Convert a string to camel case.
+		Eat all chars not letters or numbers.
 	For Example :
-		my-property -> myProperty
-		my_property -> myProperty
+		"my-property" 			-> myProperty
+		"my_property" 			-> myProperty
+		"My Property" 			-> myProperty
+		"My    Property" 		-> myProperty
+		"My			Property" 	-> myProperty
+		"my++()!&*property"		-> myProperty
 	-->
 	<scriptdef language="javascript" name="camelcase">
 		<attribute name="input" />
 		<attribute name="property" />
 		<![CDATA[
 		 	var s = new String( attributes.get( "input" ) );
-		    project.setProperty( attributes.get( "property" ),
-		            s.replace( /(-|_)([a-z])/g, function(g){ return g[1].toUpperCase()}) );
+			s = s.replace(/[^a-zA-Z0-9]+/g,"-");
+			s = s.replace(/-([^-])/g, function(g){ return g[1].toUpperCase(); });
+		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
 	

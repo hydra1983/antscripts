@@ -12,5 +12,9 @@
 
 	<propertyhelper>
 		<props:nested />
+		<props:stringops />
+		<props:types />
+		<props:conditions />
+		<props:encodeURL />
 	</propertyhelper>
 </project>
