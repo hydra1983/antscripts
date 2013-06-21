@@ -29,7 +29,7 @@ Gitlab
 
 ```xml
 <project default="build">
-    <property name="SCRIPTS_BASE" value="http://${LOCAL_SERVER}/gitlab/antscripts/blob/master" />
+    <property name="SCRIPTS_BASE" value="http://${HOST}/gitlab/antscripts/blob/master" />
 
 	<import>
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml"/>
