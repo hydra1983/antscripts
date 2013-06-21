@@ -1,6 +1,7 @@
 Usage:
 
 Github
+
 ```xml
 <project default="build">
     <property name="SCRIPTS_BASE" value="https://raw.github.com/hydra1983/antscripts/master" />
@@ -25,6 +26,7 @@ Github
 ```
 
 Gitlab
+
 ```xml
 <project default="build">
     <property name="SCRIPTS_BASE" value="http://${LOCAL_SERVER}/gitlab/antscripts/blob/master" />
