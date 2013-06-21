@@ -1,0 +1,20 @@
+<project name="ant-props" xmlns:props="antlib:org.apache.ant.props">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<get src="${SCRIPTS_LIB_BASE}/ant-props-${ant-props.version}.jar"
+		dest="${SCRIPTS_TMP_DIR}/ant-props-${ant-props.version}.jar"
+		usetimestamp="true" />
+
+	<taskdef uri="antlib:org.apache.ant.props" resource="org/apache/ant/props/antlib.xml"
+		classpath="${SCRIPTS_TMP_DIR}/ant-props-${ant-props.version}.jar" />
+
+	<propertyhelper>
+		<props:nested />
+		<props:stringops />
+		<props:types />
+		<props:conditions />
+		<props:encodeURL />
+	</propertyhelper>
+</project>

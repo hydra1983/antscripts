@@ -1,0 +1,10 @@
+<project name="core">
+	<property environment="env" />
+	<property name="SCRIPTS_LIB_BASE" value="${SCRIPTS_BASE}/lib" />
+	<property name="SCRIPTS_TMP_DIR" value="${env.TMP}" />
+	<property name="ant-contrib.version" value="1.0b5-SNAPSHOT" />
+	<property name="ant-flaka.version" value="1.02.02" />
+	<property name="xmltask.version" value="1.1.16" />
+	<property name="ant-props.version" value="1.0Alpha" />
+	<property name="deployment-ant-pack200.version" value="1.0" />
+</project>

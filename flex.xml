@@ -1,0 +1,79 @@
+<project name="flex">
+	<import>
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<property name="FLEX_HOME" value="${env.FLEX_HOME}" />
+	<property name="JAVA_HOME" value="${env.JAVA_HOME}" />
+	<property name="JAVA_HOME_32" value="${env.JAVA_HOME_32}" />
+
+	<macrodef name="flex">
+		<attribute name="exec" />
+		<attribute name="dir" default="${basedir}" />
+		<element name="args" implicit="true" />
+		<sequential>
+			<var name="java_home" value="${JAVA_HOME}" />
+			<if>
+				<and>
+					<isset property="env.windir" />
+					<resourceexists>
+						<file file="${env.windir}/../Program Files (x86)" />
+					</resourceexists>
+				</and>
+				<then>
+					<if>
+						<isset_ property="JAVA_HOME_32" />
+						<then>
+							<var name="java_home" value="${JAVA_HOME_32}" />
+						</then>
+						<else>
+							<fail
+								message="env var JAVA_HOME_32 must be set when running MXMLC on 64bit os." />
+						</else>
+					</if>
+				</then>
+			</if>
+
+			<exec dir="@{dir}" executable="${FLEX_HOME}/bin/@{exec}"
+				failonerror="true">
+				<env key="JAVA_HOME" value="${java_home}" />
+				<arg value="+flexlib=${FLEX_HOME}/frameworks" />
+				<args />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="compc">
+		<attribute name="dir" default="${basedir}" />
+		<element name="args" implicit="true" />
+		<sequential>
+			<var name="exec" value="compc" />
+			<if>
+				<equals arg1="${osfamily}" arg2="windows" />
+				<then>
+					<var name="exec" value="compc.exe" />
+				</then>
+			</if>
+			<flex exec="${exec}" dir="@{dir}">
+				<args />
+			</flex>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="mxmlc">
+		<attribute name="dir" default="${basedir}" />
+		<element name="args" implicit="true" />
+		<sequential>
+			<var name="exec" value="mxmlc" />
+			<if>
+				<equals arg1="${osfamily}" arg2="windows" />
+				<then>
+					<var name="exec" value="mxmlc.exe" />
+				</then>
+			</if>
+			<flex exec="${exec}" dir="@{dir}">
+				<args />
+			</flex>
+		</sequential>
+	</macrodef>
+</project>

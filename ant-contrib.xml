@@ -1,0 +1,18 @@
+<project name="ant-contrib">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<get src="${SCRIPTS_LIB_BASE}/ant-contrib-${ant-contrib.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/ant-contrib-${ant-contrib.version}.jar"
+	     usetimestamp="true" />
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+	         classpath="${SCRIPTS_TMP_DIR}/ant-contrib-${ant-contrib.version}.jar" />
+
+	<taskdef name="for"
+	         classname="net.sf.antcontrib.logic.ForTask"
+	         classpath="${SCRIPTS_TMP_DIR}/ant-contrib-${ant-contrib.version}.jar" />
+
+	<osfamily property="osfamily" />
+</project>

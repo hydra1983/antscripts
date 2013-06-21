@@ -1,0 +1,29 @@
+<project name="file">
+	<import>
+		<url url="${SCRIPTS_BASE}/uuid.xml" />
+	</import>
+
+	<macrodef name="loadfiles">
+		<attribute name="property" />
+		<attribute name="fixlastline" default="true" />
+		<attribute name="tmpdir" default="${env.TMP}" />
+		<attribute name="failonerror" default="true" />
+		<element name="files" implicit="true" />
+		<sequential>
+			<local name="uuid" />
+			<uuid property="uuid" />
+			<local name="destfile" />
+			<property name="destfile" value="@{tmpdir}/${uuid}" />
+			<mkdir dir="@{tmpdir}" />
+			<concat destfile="${destfile}"
+			        outputencoding="utf-8"
+			        fixlastline="@{fixlastline}">
+				<files />
+			</concat>
+			<loadfile property="@{property}"
+			          srcfile="${destfile}"
+			          failonerror="@{failonerror}" />
+			<delete file="${destfile}" />
+		</sequential>
+	</macrodef>
+</project>

@@ -1,0 +1,174 @@
+<project name="ssh">
+	<import>
+		<url url="${SCRIPTS_BASE}/linux/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<macrodef name="checkProxy">
+		<sequential>
+			<if>
+				<isset_ property="proxyHostIP" />
+				<then>
+					<var name="proxyOpts"
+					     value="-p${proxyHostSSHPort} ${proxyHostUsername}@${proxyHostIP} nc -v %h %p" />
+
+					<if>
+						<isset_ property="proxyHostKeyFile" />
+						<then>
+							<var name="proxyCommand"
+							     value="-oProxyCommand='ssh -i ${proxyHostKeyFile} ${proxyOpts}'" />
+						</then>
+						<else>
+							<var name="proxyCommand"
+							     value="-oProxyCommand='sshpass -p ${proxyHostPassword} ssh ${proxyOpts}'" />
+						</else>
+					</if>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="ssh">
+		<attribute name="exec" />
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="sudo" default="false"/>
+		<sequential>
+			<checkProxy />
+
+			<var name="opts"
+			     value="-p ${hostSSHPort} ${hostUsername}@${hostIP} '@{exec}'" />
+
+			<if>
+				<isset_ property="proxyCommand" />
+				<then>
+					<var name="opts" value="${proxyCommand} ${opts}" />
+				</then>
+			</if>
+
+			<if>
+				<isset_ property="hostKeyFile" />
+				<then>
+					<var name="cmd" value="ssh -i ${hostKeyFile} ${opts}" />
+				</then>
+				<else>
+					<var name="cmd"
+					     value="sshpass -p ${hostPassword} ssh ${opts}" />
+				</else>
+			</if>
+
+			<if>
+				<istrue value="@{sudo}"/>
+				<then>
+					<sudo exec="${cmd}" dir="@{dir}" />
+				</then>
+				<else>
+					<run exec="${cmd}" dir="@{dir}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="scp">
+		<attribute name="to" />
+		<attribute name="from" default="NULL" />
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="sudo" default="false"/>
+		<sequential>
+			<checkProxy />
+
+			<echo message="copy from '@{from}' to '@{to}'" />
+
+			<var name="opts" value="-P ${hostSSHPort} @{from} @{to}" />
+
+			<if>
+				<isset_ property="proxyCommand" />
+				<then>
+					<var name="opts" value="${proxyCommand} ${opts}" />
+				</then>
+			</if>
+
+			<if>
+				<isset_ property="hostKeyFile" />
+				<then>
+					<var name="cmd" value="scp -i ${hostKeyFile} ${opts}" />
+				</then>
+				<else>
+					<var name="cmd"
+					     value="sshpass -p ${hostPassword} scp ${opts}" />
+				</else>
+			</if>
+
+			<if>
+				<istrue value="@{sudo}"/>
+				<then>
+					<sudo exec="${cmd}" dir="@{dir}" />
+				</then>
+				<else>
+					<run exec="${cmd}" dir="@{dir}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="upload">
+		<attribute name="to" />
+		<attribute name="from" default="......" />
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="sudo" default="false"/>
+		<element name="files" implicit="true" optional="true" />
+		<sequential>
+			<checkProxy />
+
+			<if>
+				<equals arg1="@{from}" arg2="......" />
+				<then>
+					<for parallel="false" param="file">
+						<files />
+						<sequential>
+							<scp from="@{file}"
+							     to="${hostUsername}@${hostIP}:@{to}"
+							     dir="@{dir}"
+								 sudo="@{sudo}"/>
+						</sequential>
+					</for>
+				</then>
+				<else>
+					<scp from="@{from}"
+					     to="${hostUsername}@${hostIP}:@{to}"
+					     dir="@{dir}" 
+						 sudo="@{sudo}"/>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="download">
+		<attribute name="to" />
+		<attribute name="from" default="......" />
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="sudo" default="false"/>
+		<element name="files" implicit="true" optional="true" />
+		<sequential>
+			<if>
+				<equals arg1="@{from}" arg2="......" />
+				<then>
+					<for parallel="false" param="file">
+						<files />
+						<sequential>
+							<scp from="${hostUsername}@${hostIP}:@{file}"
+							     to="@{to}"
+							     dir="@{dir}"
+								 sudo="@{sudo}"/>
+						</sequential>
+					</for>
+				</then>
+				<else>
+					<scp from="${hostUsername}@${hostIP}:@{from}"
+					     to="@{to}"
+					     dir="@{dir}"
+						 sudo="@{sudo}"/>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+</project>

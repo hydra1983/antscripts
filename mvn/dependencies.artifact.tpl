@@ -1,0 +1,10 @@
+<artifactItem>
+	<groupId>@%{groupId}</groupId>
+	<artifactId>@%{artifactId}</artifactId>
+	<version>@%{version}</version>
+	<type>@%{type}</type>
+	<classifier>@%{classifier}</classifier>
+	<overWrite>@%{overwrite}</overWrite>
+	<outputDirectory>@%{outputdir}</outputDirectory>
+	<destFileName>@%{destfile}</destFileName>
+</artifactItem>
