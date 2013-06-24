@@ -1,0 +1,24 @@
+<project name="xml">
+	<import>
+		<url url="${SCRIPTS_BASE}/linux/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<macrodef name="svn">
+		<attribute name="exec"/>
+		<attribute name="dir" default="${basedir}"/>
+		<attribute name="sudo" default="false"/>
+		<sequential>
+			<var name="cmd" value="svn @{exec}" />
+			<if>
+				<istrue value="@{sudo}"/>
+				<then>
+					<sudo exec="${cmd}" dir="@{dir}" />
+				</then>
+				<else>
+					<run exec="${cmd}" dir="@{dir}" />
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+</project>
