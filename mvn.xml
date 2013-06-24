@@ -40,6 +40,7 @@
 		<attribute name="artifactFile" default="" />
 		<attribute name="failonerror" default="true" />
 		<attribute name="debug" default="false" />
+		<attribute name="nounpack" default="false" />
 		<text name="artifactsText" trim="true" optional="true" />
 		<element name="artifactFiles" implicit="true" optional="true" />
 		<sequential>
@@ -281,12 +282,15 @@
 							</loadresource>
 
 							<if>
-								<or>
-									<equals arg1="${typeLowerCase}"
-									        arg2="zip" />
-									<equals arg1="${typeLowerCase}"
-									        arg2="war" />
-								</or>
+								<and>
+									<not><istrue value="@{nounpack}"/></not>
+									<or>
+										<equals arg1="${typeLowerCase}"
+												arg2="zip" />
+										<equals arg1="${typeLowerCase}"
+												arg2="war" />
+									</or>
+								</and>
 								<then>
 									<var name="vUnpackDependencies"
 									     value="${vUnpackDependencies}${line.separator}${artifactItem}" />
