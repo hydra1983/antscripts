@@ -5,6 +5,10 @@
 
 	<scriptdef language="javascript" name="logo">
 		<attribute name="message" />
+		<attribute name="width" />
+		<!-- left,center -->
+		<attribute name="align" />
+		<attribute name="char" />
 		<![CDATA[	
 			importClass(java.lang.System);
 			
@@ -26,33 +30,71 @@
 					var w1, w2;
 					w1 = (w - wid)/2;
 					w2 = w - w1 - wid;					
-					s = mkchrseq(c, w1) + s + mkchrseq(c, w2);
+					str = mkchrseq(c, w1) + str + mkchrseq(c, w2);
 				}
 				
-				return s;
+				return str;
+			};
+			
+			function left(s,w,c){
+				var str = s;
+				var wid = str.length();
+				
+				if(wid > w){
+					str = str.substring(0,w);
+				} else {
+					var w1, w2;
+					w1 = 1;
+					w2 = w - w1 - wid;					
+					str = mkchrseq(c, w1) + str + mkchrseq(c, w2);
+				}
+				
+				return str;
 			};
 
-			function logo(msg,w){
+			function logo(msg,w,a,c){
 				var s = "";
 				var h;
 				if(w == null || w == undefined){
 					w = 40;
 				}
 				h = ((msg == null) ? "Hello world!" : msg);
-				s += mkchrseq(":", w);
+				s += mkchrseq(c, w);
 				s += '\n';
-				s += "::";
-				s += center(h, w - 4, " ");
-				s += "::";
+				s += c + c;
+				
+				if(a == "center"){
+					s += center(h, w - 4, " ");
+				} else if(a == "left"){
+					s += left(h, w - 4, " ");
+				}
+				
+				s += c + c;
 				s += '\n';
-				s += mkchrseq(":", w);
+				s += mkchrseq(c, w);
 				s += '\n'; 
 				return s;
 			};
 			
 			var the_string = attributes.get( "message" );
+			var the_width = attributes.get( "width" );
+			var the_align= attributes.get( "align" );
+			var the_char= attributes.get( "char" );
+			
+			if(the_width == null){
+				the_width = 80;
+			}
+			if(the_align == null){
+				the_align = "center";
+			}
+			if(the_char == null){
+				the_char = "#";
+			}
 			var s = "";
-			s += logo(the_string,80," ");
+			s += logo(the_string,
+				the_width,
+				the_align.toLowerCase(),
+				the_char);
 			System.out.print(s);
 		]]>
 	</scriptdef>
