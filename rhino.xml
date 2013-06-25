@@ -98,6 +98,18 @@ ${vScript}
 				<path location="@{dir}"/>
 			</pathconvert>
 			
+			<local name="scriptsBase"/>
+			<propertyregex property="scriptsBase"
+				  input="${SCRIPTS_BASE}"
+				  regexp="file\:\/\/\/(.*)"
+				  select="\1"
+				  casesensitive="false" />
+			
+			<local name="scriptsBaseUnix"/>
+			<pathconvert property="scriptsBaseUnix" targetos="unix">
+				<path location="${scriptsBase}"/>
+			</pathconvert>
+			
 			<echo file="${env.TMP}/${uuid}.js">
 				<![CDATA[
 importPackage(java.lang, java.util, java.io);
@@ -125,7 +137,13 @@ var toint32=shellGlobal.toint32;
 var version=shellGlobal.version;
 var environment=shellGlobal.environment;
 
-var __PWD__ ="${dirUnix}".replace(/\\/g,"/");
+var __basedir__ ="${dirUnix}";
+var __SCRIPTS_BASE__ = "${scriptsBaseUnix}";
+
+load(__SCRIPTS_BASE__ + "/lib/md5.js");
+
+var MD5 = CryptoJS.MD5;
+
 				]]>	
 			</echo>
 			
