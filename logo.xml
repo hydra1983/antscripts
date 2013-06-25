@@ -1,4 +1,4 @@
-<project name="uuid">
+<project name="logo">
 	<import>
 		<url url="${SCRIPTS_BASE}/core.xml" />
 	</import>
@@ -52,9 +52,8 @@
 			
 			var the_string = attributes.get( "message" );
 			var s = "";
-			s += "::";
 			s += logo(the_string,80," ");
-			s += "::";
+			System.out.print(s);
 		]]>
 	</scriptdef>
 </project>
