@@ -140,7 +140,7 @@ var environment=shellGlobal.environment;
 var __basedir__ ="${dirUnix}";
 var __SCRIPTS_BASE__ = "${scriptsBaseUnix}";
 
-load(__SCRIPTS_BASE__ + "/lib/md5.js");
+load(__SCRIPTS_BASE__ + "/rhino/md5.js");
 
 var MD5 = CryptoJS.MD5;
 
