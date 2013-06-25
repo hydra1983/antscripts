@@ -21,6 +21,7 @@
 		<attribute name="debug" default="false"/>
 		<attribute name="script" default=""/>
 		<attribute name="scriptFile" default=""/>
+		<attribute name="dir" default="${basedir}"/>
 		<text name="scriptText" optional="true"/>
 		<sequential>
 			<var name="vScript" value=""/>
@@ -91,7 +92,44 @@ ${vScript}
 			
 			<local name="uuid"/>
 			<uuid property="uuid"/>
-			<echo message="${vScript}" file="${env.TMP}/${uuid}.js"/>
+			
+			<local name="dirUnix"/>
+			<pathconvert property="dirUnix" targetos="unix">
+				<path location="@{dir}"/>
+			</pathconvert>
+			
+			<echo file="${env.TMP}/${uuid}.js">
+				<![CDATA[
+importPackage(java.lang, java.util, java.io);
+var shell = org.mozilla.javascript.tools.shell.Main;
+var args = ["-e",";"];
+shell.exec(args);
+var shellGlobal=shell.global;
+var load=shellGlobal.load;
+var print=shellGlobal.print;
+var defineClass=shellGlobal.defineClass;
+var deserialize=shellGlobal.deserialize;
+var doctest=shellGlobal.doctest;
+var gc=shellGlobal.gc;
+var help=shellGlobal.help;
+var loadClass=shellGlobal.loadClass;
+var quit=shellGlobal.quit;
+var readFile=shellGlobal.readFile;
+var readUrl=shellGlobal.readUrl;
+var runCommand=shellGlobal.runCommand;
+var seal=shellGlobal.seal;
+var serialize=shellGlobal.serialize;
+var spawn=shellGlobal.spawn;
+var sync=shellGlobal.sync;
+var toint32=shellGlobal.toint32;
+var version=shellGlobal.version;
+var environment=shellGlobal.environment;
+
+var __PWD__ ="${dirUnix}".replace(/\\/g,"/");
+				]]>	
+			</echo>
+			
+			<echo message="${vScript}" file="${env.TMP}/${uuid}.js" append="true"/>
 			
 			<script language="javascript" src="${env.TMP}/${uuid}.js">
 				<classpath>
