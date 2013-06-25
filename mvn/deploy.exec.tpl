@@ -1,0 +1,15 @@
+<execution>
+	<id>deploy-@%{underscoredGroupId}-@%{artifactId}@%{optClassifier}.@%{type}</id>
+	<phase>deploy</phase>
+	<goals>
+		<goal>deploy-file</goal>
+	</goals>
+	<configuration>
+		<groupId>@%{groupId}</groupId>
+		<artifactId>@%{artifactId}</artifactId>
+		<version>@%{version}</version>
+		<classifier>@%{classifier}</classifier>
+		<packaging>@%{type}</packaging>
+		<file>@%{location}</file>
+	</configuration>
+</execution>

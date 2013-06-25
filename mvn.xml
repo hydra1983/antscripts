@@ -28,20 +28,100 @@
 		</sequential>
 	</macrodef>
 
+	<!-- 
+	The artifact definition should be :
+		{groupId}:{artifactId}:{version}:{type}:{classifier};{outputDir};{fileName}
+	"classifier", "outputDir" and "fileName" are optional. 
+	if you want to set "fileName", you must set "outputDir" as well.
+	You must set one of "artifact","artifacts","artifactFile","artifactText","artifactFiles"
+	-->
 	<macrodef name="download-artifacts">
+		<!--
+		outputdir:
+			The default directory to copy artifact files to.
+		-->
 		<attribute name="outputdir" default="${basedir}" />
+		
+		<!--
+		dryrun:
+			If true, no artifacts will be downloaded.
+		-->
 		<attribute name="dryrun" default="false" />
+		
+		<!--
+		overwrite:
+			Will copy artifacts even if it's already exists.
+		-->
 		<attribute name="overwrite" default="false" />
+		
+		<!--
+		tmpdir:
+			The directory to put generated pom file into.
+		-->
 		<attribute name="tmpdir" default="${env.TMP}" />
+		
+		<!--
+		dir:
+			The working directory.
+		-->
 		<attribute name="dir" default="${basedir}/target" />
+		
+		<!--
+		quiet:
+			If true, no output of maven build process.
+		-->
 		<attribute name="quiet" default="true" />
-		<attribute name="artifact" default="" />
-		<attribute name="artifacts" default="" />
-		<attribute name="artifactFile" default="" />
+		
+		<!--
+		failonerror:
+			If true, fail the task when error occurred.
+		-->
 		<attribute name="failonerror" default="true" />
+		
+		<!--
+		debug:
+			If true, generate debug info and the generated
+			pom file in "tmpdir" won't be deleted.
+		-->
 		<attribute name="debug" default="false" />
+		<!--
+		nounpack:
+			If true, will copy zip and war artifact
+			files without unpacking them.
+		-->
 		<attribute name="nounpack" default="false" />
+		
+		<!--
+		artifacts:
+			Definition of artifact.
+		-->
+		<attribute name="artifact" default="" />
+		
+		<!--
+		artifacts:
+			Definitions of artifact conjunct with comma.
+		-->
+		<attribute name="artifacts" default="" />
+		
+		<!--
+		artifactFile:
+			The file contains artifacts definition.
+		"#" is used to comment a line.
+		-->
+		<attribute name="artifactFile" default="" />
+		
+		<!--
+		artifactsText:
+			Inline artifact definitions.
+		"#" is used to comment a line.
+		-->
 		<text name="artifactsText" trim="true" optional="true" />
+		
+		<!--
+		artifactFiles:
+			The files contains artifacts definition.
+		"#" is used to comment a line.
+		-->
 		<element name="artifactFiles" implicit="true" optional="true" />
 		<sequential>
 			<var name="vArtifacts" value="" />
@@ -226,22 +306,23 @@
 							<if>
 								<equals arg1="${vOutputdir}" arg2="" />
 								<then>
-									<var name="vOutputdir"
-									     value="@{outputdir}" />
+									<var name="vOutputdir" value="@{outputdir}" />
 								</then>
 							</if>
 
 							<local name="typeLowerCase" />
-							<toLowerCase input="${vType}"
-							             property="typeLowerCase" />
+							<toLowerCase input="${vType}" property="typeLowerCase" />
 
 							<if>
-								<or>
-									<equals arg1="${typeLowerCase}"
-									        arg2="zip" />
-									<equals arg1="${typeLowerCase}"
-									        arg2="war" />
-								</or>
+								<and>
+									<not><istrue value="@{nounpack}"/></not>
+									<or>
+										<equals arg1="${typeLowerCase}"
+												arg2="zip" />
+										<equals arg1="${typeLowerCase}"
+												arg2="war" />
+									</or>
+								</and>
 								<then>
 									<var name="vDestFile" value="" />
 								</then>
@@ -249,11 +330,30 @@
 									<if>
 										<equals arg1="${vDestFile}" arg2="" />
 										<then>
-											<var name="vDestFile"
-											     value="${vFinalName}" />
+											<var name="vDestFile" value="${vFinalName}" />
 										</then>
 									</if>
 								</else>
+							</if>
+							
+							<if>
+								<istrue value="@{debug}"/>
+								<then>
+									<echo>
+----------------------------------------	
+| ${vOriginDef}							
+----------------------------------------
+| groupId : ${vGroupId}	
+| artifactId : ${vArtifactId}	
+| version : ${vVersion}	
+| type : ${vType}	
+| classifier : ${vClassifier}	
+| overwrite : ${vOverwrite}	
+| outputdir : ${vOutputdir}	
+| destfile : ${vDestFile}	
+----------------------------------------
+									</echo>
+								</then>
 							</if>
 
 							<local name="artifactItem" />
@@ -399,8 +499,7 @@
 					     dest="${pomFile}" />
 
 					<replace file="${pomFile}">
-						<replacefilter token="@%{executions}"
-						               value="${vExecs}" />
+						<replacefilter token="@%{executions}" value="${vExecs}" />
 					</replace>
 
 					<if>
@@ -409,7 +508,7 @@
 							<trycatch>
 								<try>
 									<if>
-										<equals arg1="${quietLowerCase}" arg2="true" />
+										<isture value="${quietLowerCase}"/>
 										<then>
 											<mvn dir="@{dir}"
 												 failonerror="@{failonerror}">
@@ -450,6 +549,285 @@
 			<var name="vCopyDependencies" unset="true" />
 			<var name="vUnpackDependencies" unset="true" />
 			<var name="vExecs" unset="true" />
+		</sequential>
+	</macrodef>
+	
+	<!-- 
+	The artifact definition should be :
+		{groupId}:{artifactId}:{version}:{type}:{classifier};{fileLocation}
+	"classifier" is optional. 
+	-->
+	<macrodef name="deploy-artifacts">
+		<!--
+		dryrun:
+			If true, no artifacts will be downloaded.
+		-->
+		<attribute name="dryrun" default="false" />
+		
+		<!--
+		tmpdir:
+			The directory to put generated pom file into.
+		-->
+		<attribute name="tmpdir" default="${env.TMP}" />
+		
+		<!--
+		dir:
+			The working directory.
+		-->
+		<attribute name="dir" default="${basedir}/target" />
+		
+		<!--
+		quiet:
+			If true, no output of maven build process.
+		-->
+		<attribute name="quiet" default="true" />
+		
+		<!--
+		failonerror:
+			If true, fail the task when error occurred.
+		-->
+		<attribute name="failonerror" default="true" />
+		
+		<!--
+		debug:
+			If true, generate debug info and the generated
+			pom file in "tmpdir" won't be deleted.
+		-->
+		<attribute name="debug" default="false" />
+		
+		<!--
+		repositoryId:
+			The id of the repository to deploy artifacts to.
+		-->
+		<attribute name="repositoryId" />
+		
+		<!--
+		repositoryUrl:
+			The url of the repository to deploy artifacts to.
+		-->
+		<attribute name="repositoryUrl" />
+		
+		<!--
+		artifacts:
+			Definitions of artifacts conjunct with comma.
+		-->
+		<attribute name="artifacts"/>
+		<sequential>
+			<var name="vDeployExecs" value=""/>
+			<for list="@{artifacts}" param="pArtifact" delimiter="${line.separator}">
+				<sequential>
+					<if>
+						<and_>
+							<not_><equals arg1="@{pArtifact}" arg2="" /></not_>
+							<not_><startswith string="@{pArtifact}" with="#" /></not_>
+						</and_>
+						<then>
+							<var name="vOriginDef" value="@{pArtifact}" />
+							<var name="vGroupId" value="" />
+							<var name="vArtifactId" value="" />
+							<var name="vVersion" value="" />
+							<var name="vType" value="" />
+							<var name="vClassifier" value="" />
+							<var name="vLocation" value=""/>
+							
+							<var name="vI" value="0" />										
+							<for list="${vOriginDef}"  param="pValue" 
+								delimiter=";" trim="true">
+								<sequential>
+									<switch value="${vI}">
+										<case value="0">
+											<var name="vArtifactDef" value="@{pValue}" />
+											<var name="vJ" value="0" />
+											<for list="${vArtifactDef}"
+												 delimiter=":"
+												 param="pDefValue"
+												 trim="true">
+												<sequential>
+													<switch value="${vJ}">
+														<case value="0">
+															<var name="vGroupId" value="@{pDefValue}" />
+														</case>
+														<case value="1">
+															<var name="vArtifactId" value="@{pDefValue}" />
+														</case>
+														<case value="2">
+															<var name="vVersion" value="@{pDefValue}" />
+														</case>
+														<case value="3">
+															<var name="vType" value="@{pDefValue}" />
+														</case>
+														<case value="4">
+															<var name="vClassifier" value="@{pDefValue}" />
+														</case>
+														<default/>
+													</switch>
+													<math operation="+"
+														  operand1="${vJ}"
+														  operand2="1"
+														  result="vJ"
+														  datatype="int" />
+												</sequential>
+											</for>
+											<var name="vArtifactDef" unset="true" />
+											<var name="vJ" unset="true" />
+										</case>
+										<case value="1">
+											<var name="vLocation" value="@{pValue}"/>
+										</case>
+										<default/>
+									</switch>
+
+									<math operation="+"
+										  operand1="${vI}"
+										  operand2="1"
+										  result="vI"
+										  datatype="int" />
+								</sequential>
+							</for>
+							
+							<if>
+								<istrue value="@{debug}"/>
+								<then>
+									<echo>
+----------------------------------------	
+| ${vOriginDef}						
+----------------------------------------
+| groupId : ${vGroupId}	
+| artifactId : ${vArtifactId}	
+| version : ${vVersion}	
+| type : ${vType}	
+| classifier : ${vClassifier}	
+| location : ${vLocation}	
+----------------------------------------
+									</echo>
+								</then>
+							</if>
+							
+							<local name="lUnderscoredGroupId"/>
+							<propertyregex property="lUnderscoredGroupId"
+								  global="true"
+								  input="${vGroupId}"
+								  regexp="\."
+								  replace="_"/>
+								  
+							<local name="lOptClassifer"/>
+							<if>
+								<equals arg1="${vClassifier}" arg2=""/>
+								<then>
+									<property name="lOptClassifer" value=""/>
+								</then>
+								<else>
+									<property name="lOptClassifer" value="-${vClassifier}"/>
+								</else>
+							</if>
+							
+							<local name="lDeployExec" />
+							<loadresource property="lDeployExec">
+								<url url="${SCRIPTS_BASE}/mvn/deploy.exec.tpl" />
+								<filterchain>
+									<tokenfilter>
+										<replacestring from="@%{underscoredGroupId}" to="${lUnderscoredGroupId}" />									
+										<replacestring from="@%{optClassifier}" to="${lOptClassifer}" />
+										<replacestring from="@%{groupId}" to="${vGroupId}" />
+										<replacestring from="@%{artifactId}" to="${vArtifactId}" />
+										<replacestring from="@%{version}" to="${vVersion}" />
+										<replacestring from="@%{type}" to="${vType}" />
+										<replacestring from="@%{classifier}" to="${vClassifier}" />
+										<replacestring from="@%{location}" to="${vLocation}" />
+									</tokenfilter>
+								</filterchain>
+							</loadresource>
+							
+							<var name="vDeployExecs"
+								value="${vDeployExecs}${line.separator}${lDeployExec}" />
+										 
+							<var name="vOriginDef" unset="true" />
+							<var name="vGroupId" unset="true" />
+							<var name="vArtifactId" unset="true" />
+							<var name="vVersion" unset="true" />
+							<var name="vType" unset="true" />
+							<var name="vClassifier" unset="true" />
+							<var name="vLocation" unset="true"/>
+							
+							<var name="vI" unset="true" />
+						</then>
+					</if>
+				</sequential>				
+			</for>
+
+			<if>
+				<not>
+					<equals arg1="${vDeployExecs}" arg2="" />
+				</not>
+				<then>
+					<var name="vQuiet" value="" />
+					<local name="quietLowerCase" />
+					<toLowerCase input="@{quiet}" property="quietLowerCase" />
+
+					<var name="vDryrun" value="" />
+					<local name="dryrunLowerCase" />
+					<toLowerCase input="@{dryrun}" property="dryrunLowerCase" />
+
+					<mkdir dir="@{tmpdir}" />
+
+					<local name="uuid" />
+					<uuid property="uuid" />
+
+					<local name="pomFile" />
+					<property name="pomFile" value="@{tmpdir}/${uuid}" />
+
+					<get src="${SCRIPTS_BASE}/mvn/deploy.tpl" dest="${pomFile}" />
+
+					<replace file="${pomFile}">
+						<replacefilter token="@%{executions}" value="${vDeployExecs}" />
+						<replacefilter token="@%{repositoryId}" value="@{repositoryId}" />
+						<replacefilter token="@%{repositoryUrl}" value="@{repositoryUrl}" />
+					</replace>
+
+					<if>
+						<equals arg1="${dryrunLowerCase}" arg2="false" />
+						<then>
+							<trycatch>
+								<try>
+									<if>
+										<isture value="${quietLowerCase}"/>
+										<then>
+											<mvn dir="@{dir}"
+												 failonerror="@{failonerror}">
+												<arg value="deploy" />
+												<arg value="-q" />
+												<arg value="-f" />
+												<arg value="${pomFile}" />
+											</mvn>
+										</then>
+										<else>
+											<mvn dir="@{dir}"
+												 failonerror="@{failonerror}">
+												<arg value="deploy" />
+												<arg value="-f" />
+												<arg value="${pomFile}" />
+											</mvn>
+										</else>
+									</if>									
+								</try>
+								<finally>
+									<if>
+										<isfalse value="@{debug}"/>
+										<then>
+											<delete file="${pomFile}" />
+										</then>
+									</if>
+								</finally>
+							</trycatch>
+						</then>
+					</if>
+
+					<var name="vQuiet" unset="true" />
+					<var name="vDryrun" unset="true" />
+				</then>
+			</if>
+
+			<var name="vDeployExecs" unset="true"/>
 		</sequential>
 	</macrodef>
 </project>
