@@ -7,4 +7,7 @@
 	<property name="xmltask.version" value="1.1.16" />
 	<property name="ant-props.version" value="1.0Alpha" />
 	<property name="deployment-ant-pack200.version" value="1.0" />
+	<property name="bsf.version" value="2.4.0" />
+	<property name="commons-logging.version" value="1.1.3" />
+	<property name="rhino.version" value="1.7R4" />
 </project>

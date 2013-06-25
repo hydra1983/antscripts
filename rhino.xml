@@ -1,0 +1,110 @@
+<project name="rhino">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+		<url url="${SCRIPTS_BASE}/uuid.xml" />
+	</import>
+	
+	<get src="${SCRIPTS_LIB_BASE}/bsf-${bsf.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/bsf-${bsf.version}.jar"
+	     usetimestamp="true" />
+		 
+	<get src="${SCRIPTS_LIB_BASE}/commons-logging-${commons-logging.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/commons-logging-${commons-logging.version}.jar"
+	     usetimestamp="true" />
+		 
+	<get src="${SCRIPTS_LIB_BASE}/rhino-${rhino.version}.jar"
+	     dest="${SCRIPTS_TMP_DIR}/rhino-${rhino.version}.jar"
+	     usetimestamp="true" />
+
+	<macrodef name="rhino">
+		<attribute name="debug" default="false"/>
+		<attribute name="script" default=""/>
+		<attribute name="scriptFile" default=""/>
+		<text name="scriptText" optional="true"/>
+		<sequential>
+			<var name="vScript" value=""/>
+			
+			<if>
+				<not><equals arg1="@{script}" arg2=""/></not>
+				<then>
+					<var name="vScript" value="@{script}"/>
+				</then>
+			</if>
+			
+			<if>
+				<equals arg1="${vScript}" arg2=""/>
+				<then>
+					<if>
+						<not><equals arg1="@{scriptFile}" arg2=""/></not>
+						<then>
+							<local name="scriptFileContent"/>
+							<loadfile property="scriptFileContent" 
+								encoding="UTF-8" srcfile="@{scriptFile}"/>
+							<if>
+								<and_>
+									<isset_ property="scriptFileContent"/>
+									<not><equals arg1="${scriptFileContent}" arg2=""/></not>
+								</and_>
+								<then>
+									<var name="vScript" value="${scriptFileContent}"/>
+								</then>
+							</if>
+						</then>
+					</if>
+				</then>
+			</if>
+			
+			<if>
+				<equals arg1="${vScript}" arg2=""/>
+				<then>
+					<if>
+						<not><equals arg1="@{scriptText}" arg2=""/></not>
+						<then>
+							<var name="vScript" value="@{scriptText}"/>
+						</then>
+					</if>
+				</then>
+			</if>
+			
+			<if>
+				<equals arg1="${vScript}" arg2=""/>
+				<then>
+					<fail message="Require ''script'',''scriptFile'' or''scriptText''"/>
+				</then>
+			</if>
+			
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo>
+########################################
+# Execute script:
+########################################
+	
+${vScript}
+	
+########################################
+					</echo>
+				</then>
+			</if>
+			
+			<local name="uuid"/>
+			<uuid property="uuid"/>
+			<echo message="${vScript}" file="${env.TMP}/${uuid}.js"/>
+			
+			<script language="javascript" src="${env.TMP}/${uuid}.js">
+				<classpath>
+					<fileset dir="${SCRIPTS_TMP_DIR}">
+						<include name="bsf*.jar"/>
+						<include name="commons-logging*.jar"/>
+						<include name="rhino*.jar"/>
+					</fileset>
+				</classpath>
+			</script>  
+			
+			<delete file="${env.TMP}/${uuid}.js"/>
+			<var name="vScript" unset="true"/>
+		</sequential>
+	</macrodef>
+</project>
