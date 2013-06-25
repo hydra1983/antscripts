@@ -508,7 +508,7 @@
 							<trycatch>
 								<try>
 									<if>
-										<isture value="${quietLowerCase}"/>
+										<istrue value="${quietLowerCase}"/>
 										<then>
 											<mvn dir="@{dir}"
 												 failonerror="@{failonerror}">
@@ -613,6 +613,7 @@
 		-->
 		<attribute name="artifacts"/>
 		<sequential>
+			<var name="vDuplicates" value=""/>
 			<var name="vDeployExecs" value=""/>
 			<for list="@{artifacts}" param="pArtifact" delimiter="${line.separator}">
 				<sequential>
@@ -721,26 +722,42 @@
 								</else>
 							</if>
 							
-							<local name="lDeployExec" />
-							<loadresource property="lDeployExec">
-								<url url="${SCRIPTS_BASE}/mvn/deploy.exec.tpl" />
-								<filterchain>
-									<tokenfilter>
-										<replacestring from="@%{underscoredGroupId}" to="${lUnderscoredGroupId}" />									
-										<replacestring from="@%{optClassifier}" to="${lOptClassifer}" />
-										<replacestring from="@%{groupId}" to="${vGroupId}" />
-										<replacestring from="@%{artifactId}" to="${vArtifactId}" />
-										<replacestring from="@%{version}" to="${vVersion}" />
-										<replacestring from="@%{type}" to="${vType}" />
-										<replacestring from="@%{classifier}" to="${vClassifier}" />
-										<replacestring from="@%{location}" to="${vLocation}" />
-									</tokenfilter>
-								</filterchain>
-							</loadresource>
+							<local name="lUniqueName"/>
+							<property name="lUniqueName" value="${lUnderscoredGroupId}-${vArtifactId}${lOptClassifer}.${vType}"/>
 							
-							<var name="vDeployExecs"
-								value="${vDeployExecs}${line.separator}${lDeployExec}" />
-										 
+							<if>
+								<contains string="${vDuplicates}" substring="${lUniqueName}"/>
+								<then>
+									<if>
+										<istrue value="@{debug}"/>
+										<then>
+											<echo message="[DUPLICATE] : ${lUniqueName}"/>
+										</then>
+									</if>
+								</then>
+								<else>
+									<local name="lDeployExec" />
+									<loadresource property="lDeployExec">
+										<url url="${SCRIPTS_BASE}/mvn/deploy.exec.tpl" />
+										<filterchain>
+											<tokenfilter>
+												<replacestring from="@%{underscoredGroupId}" to="${lUnderscoredGroupId}" />									
+												<replacestring from="@%{optClassifier}" to="${lOptClassifer}" />
+												<replacestring from="@%{groupId}" to="${vGroupId}" />
+												<replacestring from="@%{artifactId}" to="${vArtifactId}" />
+												<replacestring from="@%{version}" to="${vVersion}" />
+												<replacestring from="@%{type}" to="${vType}" />
+												<replacestring from="@%{classifier}" to="${vClassifier}" />
+												<replacestring from="@%{location}" to="${vLocation}" />
+											</tokenfilter>
+										</filterchain>
+									</loadresource>
+									<var name="vDuplicates" value="${vDuplicates}${lUniqueName},"/>
+									<var name="vDeployExecs"
+										value="${vDeployExecs}${line.separator}${lDeployExec}" />
+								</else>
+							</if>
+							
 							<var name="vOriginDef" unset="true" />
 							<var name="vGroupId" unset="true" />
 							<var name="vArtifactId" unset="true" />
@@ -790,7 +807,7 @@
 							<trycatch>
 								<try>
 									<if>
-										<isture value="${quietLowerCase}"/>
+										<istrue value="${quietLowerCase}"/>
 										<then>
 											<mvn dir="@{dir}"
 												 failonerror="@{failonerror}">
@@ -827,6 +844,7 @@
 				</then>
 			</if>
 
+			<var name="vDuplicates" unset="true"/>
 			<var name="vDeployExecs" unset="true"/>
 		</sequential>
 	</macrodef>

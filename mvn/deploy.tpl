@@ -3,10 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.wds.maven</groupId>
+	<groupId>maven</groupId>
 	<artifactId>deploy-artifacts</artifactId>
 	<packaging>pom</packaging>
 	<version>generated</version>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -23,4 +24,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>@%{repositoryId}</id>
+			<url>@%{repositoryUrl}</url>
+		</repository>
+	</distributionManagement>
 </project>
