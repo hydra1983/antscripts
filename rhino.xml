@@ -106,9 +106,17 @@ ${vScript}
 				  casesensitive="false" />
 			
 			<local name="scriptsBaseUnix"/>
-			<pathconvert property="scriptsBaseUnix" targetos="unix">
-				<path location="${scriptsBase}"/>
-			</pathconvert>
+			<if>
+				<isset_ property="scriptsBase"/>
+				<then>
+					<pathconvert property="scriptsBaseUnix" targetos="unix">
+						<path location="${scriptsBase}"/>
+					</pathconvert>
+				</then>
+				<else>
+					<property name="scriptsBaseUnix" value="${SCRIPTS_BASE}"/>
+				</else>
+			</if>
 			
 			<echo file="${env.TMP}/${uuid}.js">
 				<![CDATA[
@@ -123,9 +131,7 @@ var defineClass=shellGlobal.defineClass;
 var deserialize=shellGlobal.deserialize;
 var doctest=shellGlobal.doctest;
 var gc=shellGlobal.gc;
-var help=shellGlobal.help;
 var loadClass=shellGlobal.loadClass;
-var quit=shellGlobal.quit;
 var readFile=shellGlobal.readFile;
 var readUrl=shellGlobal.readUrl;
 var runCommand=shellGlobal.runCommand;
@@ -141,8 +147,46 @@ var __basedir__ ="${dirUnix}";
 var __SCRIPTS_BASE__ = "${scriptsBaseUnix}";
 
 load(__SCRIPTS_BASE__ + "/rhino/md5.js");
-
 var MD5 = CryptoJS.MD5;
+
+load(__SCRIPTS_BASE__ + "/rhino/io.js");
+
+var help=function(){
+	print('Functions              Description');
+    print('=========              ===========');
+    print('help()                 Display usage and help messages.');
+    print('defineClass(className) Define an extension using the Java class');
+    print('                       named with the string argument.');
+    print('                       Uses ScriptableObject.defineClass().');
+    print('load(["foo.js", ...])  Load JavaScript source files named by');
+    print('                       string arguments.');
+    print('loadClass(className)   Load a class named by a string argument.');
+    print('                       The class must be a script compiled to a');
+    print('                       class file.');
+    print('print([expr ...])      Evaluate and print expressions.');
+    print('version([number])      Get or set the JavaScript version number.');
+    print('gc()                   Runs the garbage collector.');
+    print('spawn(arg)             Evaluate function or script name on a new thread');
+    print('sync(function [, obj]) Creates a synchronized version of the function,');
+    print('                       where the synchronization object is the obj');
+    print('                       argument or "this" if obj is undefined');
+    print('readFile(fileName [, encoding])');
+    print('                       Returns the content of the file as a string.');
+    print('                       Encoding of the string can be optionally specified.');
+    print('readUrl(url [, encoding])'); 
+    print('                       Similar to readFile, reads the contents of the url.');
+    print('runCommand(name ...)   Runs a specified shell command. Additional arguments are');
+    print('                       passed to the command'); 
+    print('seal(args ...)         Seals the supplied objects'); 
+    print('toint32(arg)           Converts the argument into a 32-bit integer');
+    print('serialize(obj, fileName)'); 
+    print('                       Serializes an object and saves it to a file');
+    print('deserialize(fileName)  Reconstructs a serialized object');
+    print('environment            Returns the current environment object');
+	print('MD5(string)            Returns the MD5 value of the given string.');
+	print('writeFile(string, file, [, encoding]).');
+	print('                       Write string to file with given encoding.');
+};
 
 				]]>	
 			</echo>
