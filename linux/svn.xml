@@ -1,4 +1,4 @@
-<project name="xml">
+<project name="svn">
 	<import>
 		<url url="${SCRIPTS_BASE}/linux/core.xml" />
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />

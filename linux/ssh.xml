@@ -3,26 +3,139 @@
 		<url url="${SCRIPTS_BASE}/linux/core.xml" />
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
-
-	<macrodef name="checkProxy">
+	
+	<macrodef name="sshGlobal">
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
+			<var name="__GLOBAL_SSH_HOST_IP__" value="@{hostIP}"/>
+			<var name="__GLOBAL_SSH_HOST_SSH_PORT__" value="@{hostSSHPort}"/>
+			<var name="__GLOBAL_SSH_HOST_USERNAME__" value="@{hostUsername}"/>
+			<var name="__GLOBAL_SSH_HOST_PASSWORD__" value="@{hostPassword}"/>
+			<var name="__GLOBAL_SSH_HOST_KEY_FILE__" value="@{hostKeyFile}"/>
+			
+			<var name="__GLOBAL_SSH_PROXY_HOST_IP__" value="@{proxyHostIP}"/>
+			<var name="__GLOBAL_SSH_PROXY_HOST_SSH_PORT__" value="@{proxyHostSSHPort}"/>
+			<var name="__GLOBAL_SSH_PROXY_HOST_USERNAME__" value="@{proxyHostUsername}"/>
+			<var name="__GLOBAL_SSH_PROXY_HOST_PASSWORD__" value="@{proxyHostPassword}"/>
+			<var name="__GLOBAL_SSH_PROXY_HOST_KEY_FILE__" value="@{proxyHostKeyFile}"/>
+						 
 			<if>
-				<isset_ property="proxyHostIP" />
+				<isset_ property="__GLOBAL_SSH_PROXY_HOST_IP__" />
 				<then>
 					<var name="proxyOpts"
-					     value="-p${proxyHostSSHPort} ${proxyHostUsername}@${proxyHostIP} nc -v %h %p" />
+					     value="-p${__GLOBAL_SSH_PROXY_HOST_SSH_PORT__} ${__GLOBAL_SSH_PROXY_HOST_USERNAME__}@${__GLOBAL_SSH_PROXY_HOST_IP__} nc -v %h %p" />
 
 					<if>
-						<isset_ property="proxyHostKeyFile" />
+						<isset_ property="__GLOBAL_SSH_PROXY_HOST_KEY_FILE__" />
 						<then>
-							<var name="proxyCommand"
-							     value="-oProxyCommand='ssh -i ${proxyHostKeyFile} ${proxyOpts}'" />
+							<var name="__GLOBAL_SSH_PROXY_COMMAND__"
+							     value="-oProxyCommand='ssh -i ${__GLOBAL_SSH_PROXY_HOST_KEY_FILE__} ${proxyOpts}'" />
 						</then>
 						<else>
-							<var name="proxyCommand"
-							     value="-oProxyCommand='sshpass -p ${proxyHostPassword} ssh ${proxyOpts}'" />
+							<var name="__GLOBAL_SSH_PROXY_COMMAND__"
+							     value="-oProxyCommand='sshpass -p ${__GLOBAL_SSH_PROXY_HOST_PASSWORD__} ssh ${proxyOpts}'" />
 						</else>
 					</if>
+					
+					<var name="proxyOpts" unset="true"/>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="sshSettings">
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
+		<sequential>
+			<var name="__SSH_HOST_IP__" value="@{hostIP}"/>
+			<var name="__SSH_HOST_SSH_PORT__" value="@{hostSSHPort}"/>
+			<var name="__SSH_HOST_USERNAME__" value="@{hostUsername}"/>
+			<var name="__SSH_HOST_PASSWORD__" value="@{hostPassword}"/>
+			<var name="__SSH_HOST_KEY_FILE__" value="@{hostKeyFile}"/>
+			
+			<if>
+				<not_><isset_ property="__SSH_HOST_IP__"/></not_>
+				<then><var name="__SSH_HOST_IP__" value="${__GLOBAL_SSH_HOST_IP__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_HOST_SSH_PORT__"/></not_>
+				<then><var name="__SSH_HOST_SSH_PORT__" value="${__GLOBAL_SSH_HOST_SSH_PORT__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_HOST_USERNAME__"/></not_>
+				<then><var name="__SSH_HOST_USERNAME__" value="${__GLOBAL_SSH_HOST_USERNAME__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_HOST_PASSWORD__"/></not_>
+				<then><var name="__SSH_HOST_PASSWORD__" value="${__GLOBAL_SSH_HOST_PASSWORD__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_HOST_KEY_FILE__"/></not_>
+				<then><var name="__SSH_HOST_KEY_FILE__" value="${__GLOBAL_SSH_HOST_KEY_FILE__}"/></then>
+			</if>
+			
+			<var name="__SSH_PROXY_HOST_IP__" value="@{proxyHostIP}"/>
+			<var name="__SSH_PROXY_HOST_SSH_PORT__" value="@{proxyHostSSHPort}"/>
+			<var name="__SSH_PROXY_HOST_USERNAME__" value="@{proxyHostUsername}"/>
+			<var name="__SSH_PROXY_HOST_PASSWORD__" value="@{proxyHostPassword}"/>
+			<var name="__SSH_PROXY_HOST_KEY_FILE__" value="@{proxyHostKeyFile}"/>
+			<if>
+				<not_><isset_ property="__SSH_PROXY_HOST_IP__"/></not_>
+				<then><var name="__SSH_PROXY_HOST_IP__" value="${__GLOBAL_SSH_PROXY_HOST_IP__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_PROXY_HOST_SSH_PORT__"/></not_>
+				<then><var name="__SSH_PROXY_HOST_SSH_PORT__" value="${__GLOBAL_SSH_PROXY_HOST_SSH_PORT__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_PROXY_HOST_USERNAME__"/></not_>
+				<then><var name="__SSH_PROXY_HOST_USERNAME__" value="${__GLOBAL_SSH_PROXY_HOST_USERNAME__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_PROXY_HOST_PASSWORD__"/></not_>
+				<then><var name="__SSH_PROXY_HOST_PASSWORD__" value="${__GLOBAL_SSH_PROXY_HOST_PASSWORD__}"/></then>
+			</if>
+			<if>
+				<not_><isset_ property="__SSH_PROXY_HOST_KEY_FILE__"/></not_>
+				<then><var name="__SSH_PROXY_HOST_KEY_FILE__" value="${__GLOBAL_SSH_PROXY_HOST_KEY_FILE__}"/></then>
+			</if>
+			
+			<if>
+				<isset_ property="__SSH_PROXY_HOST_IP__" />
+				<then>
+					<var name="proxyOpts"
+					     value="-p${__SSH_PROXY_HOST_SSH_PORT__} ${__SSH_PROXY_HOST_USERNAME__}@${__SSH_PROXY_HOST_IP__} nc -v %h %p" />
+
+					<if>
+						<isset_ property="__SSH_PROXY_HOST_KEY_FILE__" />
+						<then>
+							<var name="__SSH_PROXY_COMMAND__"
+							     value="-oProxyCommand='ssh -i ${__SSH_PROXY_HOST_KEY_FILE__} ${proxyOpts}'" />
+						</then>
+						<else>
+							<var name="__SSH_PROXY_COMMAND__"
+							     value="-oProxyCommand='sshpass -p ${__SSH_PROXY_HOST_PASSWORD__} ssh ${proxyOpts}'" />
+						</else>
+					</if>
+					
+					<var name="proxyOpts" unset="true"/>
 				</then>
 			</if>
 		</sequential>
@@ -32,30 +145,58 @@
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="sudo" default="false"/>
+		<attribute name="debug" default="false"/>
+		
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
-			<checkProxy />
+			<sshSettings hostIP="@{hostIP}"
+						 hostSSHPort="@{hostSSHPort}"
+						 hostUsername="@{hostUsername}"
+						 hostPassword="@{hostPassword}"
+						 hostKeyFile="@{hostKeyFile}"
+						 proxyHostIP="@{proxyHostIP}"
+						 proxyHostSSHPort="@{proxyHostSSHPort}"
+						 proxyHostUsername="@{proxyHostUsername}"
+						 proxyHostPassword="@{proxyHostPassword}"
+						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
 
 			<var name="opts"
-			     value="-p ${hostSSHPort} ${hostUsername}@${hostIP} '@{exec}'" />
+			     value="-p ${__SSH_HOST_SSH_PORT__} ${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__} '@{exec}'" />
 
 			<if>
-				<isset_ property="proxyCommand" />
+				<isset_ property="__SSH_PROXY_COMMAND__" />
 				<then>
-					<var name="opts" value="${proxyCommand} ${opts}" />
+					<var name="opts" value="${__SSH_PROXY_COMMAND__} ${opts}" />
 				</then>
 			</if>
 
 			<if>
-				<isset_ property="hostKeyFile" />
+				<isset_ property="__SSH_HOST_KEY_FILE__" />
 				<then>
-					<var name="cmd" value="ssh -i ${hostKeyFile} ${opts}" />
+					<var name="cmd" value="ssh -i ${__SSH_HOST_KEY_FILE__} ${opts}" />
 				</then>
 				<else>
 					<var name="cmd"
-					     value="sshpass -p ${hostPassword} ssh ${opts}" />
+					     value="sshpass -p ${__SSH_HOST_PASSWORD__} ssh ${opts}" />
 				</else>
 			</if>
-
+			
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[SSH] : ${cmd}"/>
+				</then>
+			</if>
+			
 			<if>
 				<istrue value="@{sudo}"/>
 				<then>
@@ -65,6 +206,9 @@
 					<run exec="${cmd}" dir="@{dir}" />
 				</else>
 			</if>
+			
+			<var name="opts" unset="true"/>
+			<var name="cmd" unset="true"/>
 		</sequential>
 	</macrodef>
 
@@ -73,29 +217,57 @@
 		<attribute name="from" default="NULL" />
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="sudo" default="false"/>
+		<attribute name="debug" default="false"/>
+		
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
-			<checkProxy />
+			<sshSettings hostIP="@{hostIP}"
+						 hostSSHPort="@{hostSSHPort}"
+						 hostUsername="@{hostUsername}"
+						 hostPassword="@{hostPassword}"
+						 hostKeyFile="@{hostKeyFile}"
+						 proxyHostIP="@{proxyHostIP}"
+						 proxyHostSSHPort="@{proxyHostSSHPort}"
+						 proxyHostUsername="@{proxyHostUsername}"
+						 proxyHostPassword="@{proxyHostPassword}"
+						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
 
 			<echo message="copy from '@{from}' to '@{to}'" />
 
-			<var name="opts" value="-P ${hostSSHPort} @{from} @{to}" />
+			<var name="opts" value="-P ${__SSH_HOST_SSH_PORT__} @{from} @{to}" />
 
 			<if>
-				<isset_ property="proxyCommand" />
+				<isset_ property="__SSH_PROXY_COMMAND__" />
 				<then>
-					<var name="opts" value="${proxyCommand} ${opts}" />
+					<var name="opts" value="${__SSH_PROXY_COMMAND__} ${opts}" />
 				</then>
 			</if>
 
 			<if>
-				<isset_ property="hostKeyFile" />
+				<isset_ property="__SSH_HOST_KEY_FILE__" />
 				<then>
-					<var name="cmd" value="scp -i ${hostKeyFile} ${opts}" />
+					<var name="cmd" value="scp -i ${__SSH_HOST_KEY_FILE__} ${opts}" />
 				</then>
 				<else>
 					<var name="cmd"
-					     value="sshpass -p ${hostPassword} scp ${opts}" />
+					     value="sshpass -p ${__SSH_HOST_PASSWORD__} scp ${opts}" />
 				</else>
+			</if>
+			
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[SCP] : ${cmd}"/>
+				</then>
 			</if>
 
 			<if>
@@ -107,6 +279,9 @@
 					<run exec="${cmd}" dir="@{dir}" />
 				</else>
 			</if>
+			
+			<var name="opts" unset="true"/>
+			<var name="cmd" unset="true"/>
 		</sequential>
 	</macrodef>
 
@@ -116,9 +291,27 @@
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="sudo" default="false"/>
 		<element name="files" implicit="true" optional="true" />
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
-			<checkProxy />
-
+			<sshSettings hostIP="@{hostIP}"
+						 hostSSHPort="@{hostSSHPort}"
+						 hostUsername="@{hostUsername}"
+						 hostPassword="@{hostPassword}"
+						 hostKeyFile="@{hostKeyFile}"
+						 proxyHostIP="@{proxyHostIP}"
+						 proxyHostSSHPort="@{proxyHostSSHPort}"
+						 proxyHostUsername="@{proxyHostUsername}"
+						 proxyHostPassword="@{proxyHostPassword}"
+						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
 			<if>
 				<equals arg1="@{from}" arg2="......" />
 				<then>
@@ -126,17 +319,37 @@
 						<files />
 						<sequential>
 							<scp from="@{file}"
-							     to="${hostUsername}@${hostIP}:@{to}"
+							     to="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{to}"
 							     dir="@{dir}"
-								 sudo="@{sudo}"/>
+								 sudo="@{sudo}"
+								 hostIP="${__SSH_HOST_IP__}"
+								 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
+								 hostUsername="${__SSH_HOST_USERNAME__}"
+								 hostPassword="${__SSH_HOST_PASSWORD__}"
+								 hostKeyFile="${__SSH_HOST_KEY_FILE__}"
+								 proxyHostIP="${__SSH_PROXY_HOST_IP__}"
+								 proxyHostSSHPort="${__SSH_PROXY_HOST_SSH_PORT__}"
+								 proxyHostUsername="${__SSH_PROXY_HOST_USERNAME__}"
+								 proxyHostPassword="${__SSH_PROXY_HOST_PASSWORD__}"
+								 proxyHostKeyFile="${__SSH_PROXY_HOST_KEY_FILE__}"/>
 						</sequential>
 					</for>
 				</then>
 				<else>
 					<scp from="@{from}"
-					     to="${hostUsername}@${hostIP}:@{to}"
+					     to="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{to}"
 					     dir="@{dir}" 
-						 sudo="@{sudo}"/>
+						 sudo="@{sudo}"
+						 hostIP="${__SSH_HOST_IP__}"
+						 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
+						 hostUsername="${__SSH_HOST_USERNAME__}"
+						 hostPassword="${__SSH_HOST_PASSWORD__}"
+						 hostKeyFile="${__SSH_HOST_KEY_FILE__}"
+						 proxyHostIP="${__SSH_PROXY_HOST_IP__}"
+						 proxyHostSSHPort="${__SSH_PROXY_HOST_SSH_PORT__}"
+						 proxyHostUsername="${__SSH_PROXY_HOST_USERNAME__}"
+						 proxyHostPassword="${__SSH_PROXY_HOST_PASSWORD__}"
+						 proxyHostKeyFile="${__SSH_PROXY_HOST_KEY_FILE__}"/>
 				</else>
 			</if>
 		</sequential>
@@ -148,25 +361,65 @@
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="sudo" default="false"/>
 		<element name="files" implicit="true" optional="true" />
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
+			<sshSettings hostIP="@{hostIP}"
+						 hostSSHPort="@{hostSSHPort}"
+						 hostUsername="@{hostUsername}"
+						 hostPassword="@{hostPassword}"
+						 hostKeyFile="@{hostKeyFile}"
+						 proxyHostIP="@{proxyHostIP}"
+						 proxyHostSSHPort="@{proxyHostSSHPort}"
+						 proxyHostUsername="@{proxyHostUsername}"
+						 proxyHostPassword="@{proxyHostPassword}"
+						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
 			<if>
 				<equals arg1="@{from}" arg2="......" />
 				<then>
 					<for parallel="false" param="file">
 						<files />
 						<sequential>
-							<scp from="${hostUsername}@${hostIP}:@{file}"
+							<scp from="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{file}"
 							     to="@{to}"
 							     dir="@{dir}"
-								 sudo="@{sudo}"/>
+								 sudo="@{sudo}"
+								 hostIP="${__SSH_HOST_IP__}"
+								 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
+								 hostUsername="${__SSH_HOST_USERNAME__}"
+								 hostPassword="${__SSH_HOST_PASSWORD__}"
+								 hostKeyFile="${__SSH_HOST_KEY_FILE__}"
+								 proxyHostIP="${__SSH_PROXY_HOST_IP__}"
+								 proxyHostSSHPort="${__SSH_PROXY_HOST_SSH_PORT__}"
+								 proxyHostUsername="${__SSH_PROXY_HOST_USERNAME__}"
+								 proxyHostPassword="${__SSH_PROXY_HOST_PASSWORD__}"
+								 proxyHostKeyFile="${__SSH_PROXY_HOST_KEY_FILE__}"/>
 						</sequential>
 					</for>
 				</then>
 				<else>
-					<scp from="${hostUsername}@${hostIP}:@{from}"
+					<scp from="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{from}"
 					     to="@{to}"
 					     dir="@{dir}"
-						 sudo="@{sudo}"/>
+						 sudo="@{sudo}"
+						 hostIP="${__SSH_HOST_IP__}"
+						 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
+						 hostUsername="${__SSH_HOST_USERNAME__}"
+						 hostPassword="${__SSH_HOST_PASSWORD__}"
+						 hostKeyFile="${__SSH_HOST_KEY_FILE__}"
+						 proxyHostIP="${__SSH_PROXY_HOST_IP__}"
+						 proxyHostSSHPort="${__SSH_PROXY_HOST_SSH_PORT__}"
+						 proxyHostUsername="${__SSH_PROXY_HOST_USERNAME__}"
+						 proxyHostPassword="${__SSH_PROXY_HOST_PASSWORD__}"
+						 proxyHostKeyFile="${__SSH_PROXY_HOST_KEY_FILE__}"/>
 				</else>
 			</if>
 		</sequential>

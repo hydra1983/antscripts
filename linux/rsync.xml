@@ -1,6 +1,7 @@
 <project name="rsync">
 	<import>
 		<url url="${SCRIPTS_BASE}/linux/core.xml" />
+		<url url="${SCRIPTS_BASE}/linux/ssh.xml" />
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 
@@ -13,14 +14,37 @@
 		<attribute name="options"
 		           default="-rthczv --progress --delete --stats" />
 		<attribute name="sudo" default="false"/>
+		<attribute name="debug" default="false"/>
+		
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
+			<sshSettings hostIP="@{hostIP}"
+						 hostSSHPort="@{hostSSHPort}"
+						 hostUsername="@{hostUsername}"
+						 hostPassword="@{hostPassword}"
+						 hostKeyFile="@{hostKeyFile}"
+						 proxyHostIP="@{proxyHostIP}"
+						 proxyHostSSHPort="@{proxyHostSSHPort}"
+						 proxyHostUsername="@{proxyHostUsername}"
+						 proxyHostPassword="@{proxyHostPassword}"
+						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
+						
 			<switch value="@{direction}">
 				<case value="up">
 					<var name="realFrom" value="@{from}"/>
-					<var name="realTo" value="${hostUsername}@${hostIP}:@{to}"/>
+					<var name="realTo" value="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{to}"/>
 				</case>
 				<case value="down">
-					<var name="realFrom" value="${hostUsername}@${hostIP}:@{from}"/>
+					<var name="realFrom" value="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{from}"/>
 					<var name="realTo" value="@{to}"/>
 				</case>
 				<case value="none">
@@ -33,25 +57,32 @@
 
 			<var name="rsyncOpts"
 			     value="${realFrom} ${realTo}" />
-			<var name="opts" value="-p ${hostSSHPort}" />
+			<var name="opts" value="-p ${__SSH_HOST_SSH_PORT__}" />
 
 			<if>
-				<isset_ property="proxyCommand" />
+				<isset_ property="__SSH_PROXY_COMMAND__" />
 				<then>
-					<var name="opts" value="${proxyCommand} ${opts}" />
+					<var name="opts" value="${__SSH_PROXY_COMMAND__} ${opts}" />
 				</then>
 			</if>
 
 			<if>
-				<isset_ property="hostKeyFile" />
+				<isset_ property="__SSH_HOST_KEY_FILE__" />
 				<then>
 					<var name="cmd"
-					     value="rsync @{options} --rsh=&quot;ssh -i ${hostKeyFile} ${opts}&quot; ${rsyncOpts}" />
+					     value="rsync @{options} --rsh=&quot;ssh -i ${__SSH_HOST_KEY_FILE__} ${opts}&quot; ${rsyncOpts}" />
 				</then>
 				<else>
 					<var name="cmd"
-					     value="rsync @{options} --rsh=&quot;sshpass -p ${hostPassword} ssh ${opts}&quot; ${rsyncOpts}" />
+					     value="rsync @{options} --rsh=&quot;sshpass -p ${__SSH_HOST_PASSWORD__} ssh ${opts}&quot; ${rsyncOpts}" />
 				</else>
+			</if>
+			
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[RSYNC] : ${cmd}"/>
+				</then>
 			</if>
 			
 			<if>
@@ -63,6 +94,12 @@
 					<run exec="${cmd}" dir="@{dir}" />
 				</else>
 			</if>
+			
+			<var name="realFrom" unset="true"/>
+			<var name="realTo" unset="true"/>
+			<var name="rsyncOpts" unset="true"/>
+			<var name="opts" unset="true"/>
+			<var name="cmd" unset="true"/>
 		</sequential>
 	</macrodef>
 </project>
