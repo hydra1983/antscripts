@@ -1,0 +1,16 @@
+<project name="svn-win">
+	<import>
+		<url url="${SCRIPTS_BASE}/win/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<macrodef name="svn">
+		<attribute name="exec"/>
+		<attribute name="dir" default="${basedir}"/>
+		<attribute name="sudo" default=""/>
+		<sequential>
+			<var name="cmd" value="svn @{exec}" />
+			<run exec="${cmd}" dir="@{dir}" />
+		</sequential>
+	</macrodef>
+</project>

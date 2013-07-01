@@ -1,0 +1,9 @@
+<project name="ssh">
+	<import>
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+	
+	<import>
+		<url url="${SCRIPTS_BASE}/${osfamily}/ssh.xml" />
+	</import>
+</project>

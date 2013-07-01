@@ -1,6 +1,6 @@
-<project name="ssh-linux">
+<project name="ssh-win">
 	<import>
-		<url url="${SCRIPTS_BASE}/linux/core.xml" />
+		<url url="${SCRIPTS_BASE}/win/core.xml" />
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 	
@@ -27,28 +27,6 @@
 			<var name="__GLOBAL_SSH_PROXY_HOST_USERNAME__" value="@{proxyHostUsername}"/>
 			<var name="__GLOBAL_SSH_PROXY_HOST_PASSWORD__" value="@{proxyHostPassword}"/>
 			<var name="__GLOBAL_SSH_PROXY_HOST_KEY_FILE__" value="@{proxyHostKeyFile}"/>
-						 
-			<if>
-				<isset_ property="__GLOBAL_SSH_PROXY_HOST_IP__" />
-				<then>
-					<var name="proxyOpts"
-					     value="-p${__GLOBAL_SSH_PROXY_HOST_SSH_PORT__} ${__GLOBAL_SSH_PROXY_HOST_USERNAME__}@${__GLOBAL_SSH_PROXY_HOST_IP__} nc -v %h %p" />
-
-					<if>
-						<isset_ property="__GLOBAL_SSH_PROXY_HOST_KEY_FILE__" />
-						<then>
-							<var name="__GLOBAL_SSH_PROXY_COMMAND__"
-							     value="-oProxyCommand='ssh -i ${__GLOBAL_SSH_PROXY_HOST_KEY_FILE__} ${proxyOpts}'" />
-						</then>
-						<else>
-							<var name="__GLOBAL_SSH_PROXY_COMMAND__"
-							     value="-oProxyCommand='sshpass -p ${__GLOBAL_SSH_PROXY_HOST_PASSWORD__} ssh ${proxyOpts}'" />
-						</else>
-					</if>
-					
-					<var name="proxyOpts" unset="true"/>
-				</then>
-			</if>
 		</sequential>
 	</macrodef>
 	
@@ -116,28 +94,6 @@
 				<not_><isset_ property="__SSH_PROXY_HOST_KEY_FILE__"/></not_>
 				<then><var name="__SSH_PROXY_HOST_KEY_FILE__" value="${__GLOBAL_SSH_PROXY_HOST_KEY_FILE__}"/></then>
 			</if>
-			
-			<if>
-				<isset_ property="__SSH_PROXY_HOST_IP__" />
-				<then>
-					<var name="proxyOpts"
-					     value="-p${__SSH_PROXY_HOST_SSH_PORT__} ${__SSH_PROXY_HOST_USERNAME__}@${__SSH_PROXY_HOST_IP__} nc -v %h %p" />
-
-					<if>
-						<isset_ property="__SSH_PROXY_HOST_KEY_FILE__" />
-						<then>
-							<var name="__SSH_PROXY_COMMAND__"
-							     value="-oProxyCommand='ssh -i ${__SSH_PROXY_HOST_KEY_FILE__} ${proxyOpts}'" />
-						</then>
-						<else>
-							<var name="__SSH_PROXY_COMMAND__"
-							     value="-oProxyCommand='sshpass -p ${__SSH_PROXY_HOST_PASSWORD__} ssh ${proxyOpts}'" />
-						</else>
-					</if>
-					
-					<var name="proxyOpts" unset="true"/>
-				</then>
-			</if>
 		</sequential>
 	</macrodef>
 
@@ -170,23 +126,16 @@
 						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
 
 			<var name="opts"
-			     value="-p ${__SSH_HOST_SSH_PORT__} ${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__} '@{exec}'" />
-
-			<if>
-				<isset_ property="__SSH_PROXY_COMMAND__" />
-				<then>
-					<var name="opts" value="${__SSH_PROXY_COMMAND__} ${opts}" />
-				</then>
-			</if>
+			     value="-P ${__SSH_HOST_SSH_PORT__} ${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__} '@{exec}'" />
 
 			<if>
 				<isset_ property="__SSH_HOST_KEY_FILE__" />
 				<then>
-					<var name="cmd" value="ssh -i ${__SSH_HOST_KEY_FILE__} ${opts}" />
+					<var name="cmd" value="plink -i ${__SSH_HOST_KEY_FILE__} ${opts}" />
 				</then>
 				<else>
 					<var name="cmd"
-					     value="sshpass -p ${__SSH_HOST_PASSWORD__} ssh ${opts}" />
+					     value="plink -pw ${__SSH_HOST_PASSWORD__} ${opts}" />
 				</else>
 			</if>
 			
@@ -246,20 +195,13 @@
 			<var name="opts" value="-P ${__SSH_HOST_SSH_PORT__} @{from} @{to}" />
 
 			<if>
-				<isset_ property="__SSH_PROXY_COMMAND__" />
-				<then>
-					<var name="opts" value="${__SSH_PROXY_COMMAND__} ${opts}" />
-				</then>
-			</if>
-
-			<if>
 				<isset_ property="__SSH_HOST_KEY_FILE__" />
 				<then>
-					<var name="cmd" value="scp -i ${__SSH_HOST_KEY_FILE__} ${opts}" />
+					<var name="cmd" value="pscp -i ${__SSH_HOST_KEY_FILE__} ${opts}" />
 				</then>
 				<else>
 					<var name="cmd"
-					     value="sshpass -p ${__SSH_HOST_PASSWORD__} scp ${opts}" />
+					     value="pscp -pw ${__SSH_HOST_PASSWORD__} ${opts}" />
 				</else>
 			</if>
 			

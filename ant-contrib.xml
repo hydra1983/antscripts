@@ -15,4 +15,16 @@
 	         classpath="${SCRIPTS_TMP_DIR}/ant-contrib-${ant-contrib.version}.jar" />
 
 	<osfamily property="osfamily" />
+	<if>
+		<equals arg1="${osfamily}" arg2="windows"/>
+		<then>
+			<var name="osfamily" value="win"/>
+		</then>
+		<elseif>
+			<equals arg1="${osfamily}" arg2="unix"/>
+			<then>
+				<var name="osfamily" value="linux"/>
+			</then>
+		</elseif>
+	</if>
 </project>

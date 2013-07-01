@@ -1,4 +1,4 @@
-<project name="core-linux">
+<project name="core-win">
 	<import>
 		<url url="${SCRIPTS_BASE}/core.xml" />
 	</import>
@@ -7,22 +7,18 @@
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
 		<sequential>
-			<exec executable="/bin/bash" failonerror="true" dir="@{dir}">
-				<arg value="-c" />
+			<exec executable="cmd" failonerror="true" dir="@{dir}">
+				<arg value="/c" />
 				<arg value="@{exec}" />
 			</exec>
 		</sequential>
 	</macrodef>
-
+	
 	<macrodef name="sudo">
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
 		<sequential>
-			<exec executable="sudo" failonerror="true" dir="@{dir}">
-				<arg value="/bin/bash" />
-				<arg value="-c" />
-				<arg value="@{exec}" />
-			</exec>
+			<run exec="@{exec}" dir="@{dir}"/>
 		</sequential>
 	</macrodef>
 </project>

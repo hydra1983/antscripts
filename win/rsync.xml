@@ -1,0 +1,33 @@
+<project name="rsync-win">
+	<import>
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+		<url url="${SCRIPTS_BASE}/win/core.xml" />
+		<url url="${SCRIPTS_BASE}/win/ssh.xml" />
+	</import>
+
+	<macrodef name="rsync">
+		<attribute name="from" />
+		<attribute name="to" />
+		<attribute name="direction" default="up" 
+			description="up(local to remote) | down(remote to local) | none(defined by user)"/>
+		<attribute name="dir" default="${basedir}" />
+		<attribute name="options"
+		           default="-rthczv --progress --delete --stats" />
+		<attribute name="sudo" default="false"/>
+		<attribute name="debug" default="false"/>
+		
+		<attribute name="hostIP" default="${hostIP}"/>
+		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
+		<attribute name="hostUsername" default="${hostUsername}"/>
+		<attribute name="hostPassword" default="${hostPassword}"/>
+		<attribute name="hostKeyFile" default="${hostKeyFile}"/>
+		<attribute name="proxyHostIP" default="${proxyHostIP}"/>
+		<attribute name="proxyHostSSHPort" default="${proxyHostSSHPort}"/>
+		<attribute name="proxyHostUsername" default="${proxyHostUsername}"/>
+		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
+		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
+		<sequential>
+			<fail message="Rsync is not supported under windows."/>
+		</sequential>
+	</macrodef>
+</project>

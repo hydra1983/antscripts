@@ -1,0 +1,9 @@
+<project name="rsync">
+	<import>
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+	
+	<import>
+		<url url="${SCRIPTS_BASE}/${osfamily}/rsync.xml" />
+	</import>
+</project>
