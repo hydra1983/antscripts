@@ -1,15 +1,24 @@
 <project name="core-win">
 	<import>
 		<url url="${SCRIPTS_BASE}/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 
 	<macrodef name="run">
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
+		<attribute name="debug" default="false" />
 		<sequential>
-			<exec executable="cmd" failonerror="true" dir="@{dir}">
-				<arg value="/c" />
-				<arg value="@{exec}" />
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[run] CMD /S /C &quot;@{exec}&quot;"/>
+				</then>
+			</if>
+			<exec executable="CMD" failonerror="true" dir="@{dir}">
+        <arg value="/S" />
+				<arg value="/C" />
+				<arg value="&quot;@{exec}&quot;" />
 			</exec>
 		</sequential>
 	</macrodef>
@@ -17,8 +26,9 @@
 	<macrodef name="sudo">
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
+		<attribute name="debug" default="false" />
 		<sequential>
-			<run exec="@{exec}" dir="@{dir}"/>
+			<run exec="@{exec}" dir="@{dir}" debug="@{debug}"/>
 		</sequential>
 	</macrodef>
 </project>

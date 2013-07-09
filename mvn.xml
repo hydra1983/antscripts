@@ -15,7 +15,10 @@
 		<sequential>
 			<var name="exec" value="mvn" />
 			<if>
-				<equals arg1="${osfamily}" arg2="windows" />
+				<or>
+					<equals arg1="${osfamily}" arg2="win" />
+					<equals arg1="${osfamily}" arg2="windows" />
+				</or>
 				<then>
 					<var name="exec" value="mvn.bat" />
 				</then>

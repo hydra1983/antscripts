@@ -49,7 +49,10 @@
 		<sequential>
 			<var name="exec" value="compc" />
 			<if>
-				<equals arg1="${osfamily}" arg2="windows" />
+				<or>
+					<equals arg1="${osfamily}" arg2="win" />
+					<equals arg1="${osfamily}" arg2="windows" />
+				</or>
 				<then>
 					<var name="exec" value="compc.exe" />
 				</then>
@@ -66,7 +69,10 @@
 		<sequential>
 			<var name="exec" value="mxmlc" />
 			<if>
-				<equals arg1="${osfamily}" arg2="windows" />
+				<or>
+					<equals arg1="${osfamily}" arg2="win" />
+					<equals arg1="${osfamily}" arg2="windows" />
+				</or>
 				<then>
 					<var name="exec" value="mxmlc.exe" />
 				</then>

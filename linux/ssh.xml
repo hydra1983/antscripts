@@ -5,6 +5,8 @@
 	</import>
 	
 	<macrodef name="sshGlobal">
+		<attribute name="debug" default="false"/>
+		
 		<attribute name="hostIP" default="${hostIP}"/>
 		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
 		<attribute name="hostUsername" default="${hostUsername}"/>
@@ -53,6 +55,8 @@
 	</macrodef>
 	
 	<macrodef name="sshSettings">
+		<attribute name="debug" default="false"/>
+		
 		<attribute name="hostIP" default="${hostIP}"/>
 		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
 		<attribute name="hostUsername" default="${hostUsername}"/>
@@ -290,7 +294,9 @@
 		<attribute name="from" default="......" />
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="sudo" default="false"/>
+		<attribute name="debug" default="false"/>
 		<element name="files" implicit="true" optional="true" />
+		
 		<attribute name="hostIP" default="${hostIP}"/>
 		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
 		<attribute name="hostUsername" default="${hostUsername}"/>
@@ -302,7 +308,9 @@
 		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
 		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
-			<sshSettings hostIP="@{hostIP}"
+			<sshSettings debug="@{debug}"
+			
+					     hostIP="@{hostIP}"
 						 hostSSHPort="@{hostSSHPort}"
 						 hostUsername="@{hostUsername}"
 						 hostPassword="@{hostPassword}"
@@ -322,6 +330,8 @@
 							     to="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{to}"
 							     dir="@{dir}"
 								 sudo="@{sudo}"
+								 debug="@{debug}"
+								 
 								 hostIP="${__SSH_HOST_IP__}"
 								 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
 								 hostUsername="${__SSH_HOST_USERNAME__}"
@@ -340,6 +350,8 @@
 					     to="${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__}:@{to}"
 					     dir="@{dir}" 
 						 sudo="@{sudo}"
+						 debug="@{debug}"
+						 
 						 hostIP="${__SSH_HOST_IP__}"
 						 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
 						 hostUsername="${__SSH_HOST_USERNAME__}"
@@ -360,7 +372,9 @@
 		<attribute name="from" default="......" />
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="sudo" default="false"/>
+		<attribute name="debug" default="false"/>
 		<element name="files" implicit="true" optional="true" />
+		
 		<attribute name="hostIP" default="${hostIP}"/>
 		<attribute name="hostSSHPort" default="${hostSSHPort}"/>
 		<attribute name="hostUsername" default="${hostUsername}"/>
@@ -372,7 +386,9 @@
 		<attribute name="proxyHostPassword" default="${proxyHostPassword}"/>
 		<attribute name="proxyHostKeyFile" default="${proxyHostKeyFile}"/>
 		<sequential>
-			<sshSettings hostIP="@{hostIP}"
+			<sshSettings debug="@{debug}"
+			
+						 hostIP="@{hostIP}"
 						 hostSSHPort="@{hostSSHPort}"
 						 hostUsername="@{hostUsername}"
 						 hostPassword="@{hostPassword}"
@@ -392,6 +408,8 @@
 							     to="@{to}"
 							     dir="@{dir}"
 								 sudo="@{sudo}"
+								 debug="@{debug}"
+								 
 								 hostIP="${__SSH_HOST_IP__}"
 								 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
 								 hostUsername="${__SSH_HOST_USERNAME__}"
@@ -410,6 +428,8 @@
 					     to="@{to}"
 					     dir="@{dir}"
 						 sudo="@{sudo}"
+						 debug="@{debug}"
+						 
 						 hostIP="${__SSH_HOST_IP__}"
 						 hostSSHPort="${__SSH_HOST_SSH_PORT__}"
 						 hostUsername="${__SSH_HOST_USERNAME__}"

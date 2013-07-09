@@ -1,12 +1,20 @@
 <project name="core-linux">
 	<import>
 		<url url="${SCRIPTS_BASE}/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 
 	<macrodef name="run">
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
+		<attribute name="debug" default="false" />
 		<sequential>
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[run] /bin/bash -c @{exec}"/>
+				</then>
+			</if>
 			<exec executable="/bin/bash" failonerror="true" dir="@{dir}">
 				<arg value="-c" />
 				<arg value="@{exec}" />
@@ -17,6 +25,7 @@
 	<macrodef name="sudo">
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
+		<attribute name="debug" default="false" />
 		<sequential>
 			<exec executable="sudo" failonerror="true" dir="@{dir}">
 				<arg value="/bin/bash" />
