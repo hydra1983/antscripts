@@ -130,7 +130,7 @@
 						 proxyHostKeyFile="@{proxyHostKeyFile}"/>
 
 			<var name="opts"
-			     value="-P ${__SSH_HOST_SSH_PORT__} ${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__} '@{exec}'" />
+			     value="-P ${__SSH_HOST_SSH_PORT__} ${__SSH_HOST_USERNAME__}@${__SSH_HOST_IP__} @{exec}" />
 
 			<if>
 				<isset_ property="__SSH_HOST_KEY_FILE__" />

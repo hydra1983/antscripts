@@ -4,13 +4,70 @@
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 
+	<macrodef name="svnGlobal">
+		<attribute name="debug" default="false"/>
+		
+		<attribute name="scmUsername" default="${scmUsername}"/>
+		<attribute name="scmPassword" default="${scmPassword}"/>
+		<sequential>
+			<var name="__GLOBAL_SVN_SCM_USERNAME__" value="@{scmUsername}"/>
+			<var name="__GLOBAL_SVN_SCM_PASSWORD__" value="@{scmPassword}"/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="svnSettings">
+		<attribute name="debug" default="false"/>
+		
+		<attribute name="scmUsername" default="${scmUsername}"/>
+		<attribute name="scmPassword" default="${scmPassword}"/>
+		<sequential>
+			<var name="__SVN_SCM_USERNAME__" value="@{scmUsername}"/>
+			<var name="__SVN_SCM_PASSWORD__" value="@{scmPassword}"/>
+
+			<if>
+				<not_><isset_ property="__SVN_SCM_USERNAME__"/></not_>
+				<then><var name="__SVN_SCM_USERNAME__" value="${__GLOBAL_SVN_SCM_USERNAME__}"/></then>
+			</if>
+
+			<if>
+				<not_><isset_ property="__SVN_SCM_PASSWORD__"/></not_>
+				<then><var name="__SVN_SCM_PASSWORD__" value="${__GLOBAL_SVN_SCM_PASSWORD__}"/></then>
+			</if>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="svn">
 		<attribute name="exec"/>
 		<attribute name="dir" default="${basedir}"/>
 		<attribute name="sudo" default=""/>
+		<attribute name="debug" default="false"/>
+
+		<attribute name="scmUsername" default="${scmUsername}"/>
+		<attribute name="scmPassword" default="${scmPassword}"/>
 		<sequential>
+			<svnSettings scmUsername="@{scmUsername}"
+						 scmPassword="@{scmPassword}"/>
+
 			<var name="cmd" value="svn @{exec}" />
+			<if>
+				<and_>
+					<isset_ property="__SVN_SCM_USERNAME__"/>
+					<isset_ property="__SVN_SCM_PASSWORD__"/>
+					<matches casesensitive="false" pattern="^.*\s(co|checkout)\s.*$" string="${cmd}"/>
+				</and_>
+				<then>
+					<var name="cmd" value="${cmd} --username ${__SVN_SCM_USERNAME__} --password ${__SVN_SCM_PASSWORD__} --non-interactive"/>
+				</then>
+			</if>
+
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[SVN] ${cmd}"/>
+				</then>
+			</if>
 			<run exec="${cmd}" dir="@{dir}" />
+			<var name="cmd" unset="true"/>
 		</sequential>
 	</macrodef>
 </project>

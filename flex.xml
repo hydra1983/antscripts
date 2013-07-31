@@ -3,15 +3,18 @@
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 
-	<property name="FLEX_HOME" value="${env.FLEX_HOME}" />
-	<property name="JAVA_HOME" value="${env.JAVA_HOME}" />
-	<property name="JAVA_HOME_32" value="${env.JAVA_HOME_32}" />
-
 	<macrodef name="flex">
+    <attribute name="flexHome" default="${env.FLEX_HOME}" />
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
 		<element name="args" implicit="true" />
 		<sequential>
+      <local name="JAVA_HOME"/>
+      <property name="JAVA_HOME" value="${env.JAVA_HOME}" />
+      
+      <local name="JAVA_HOME_32"/>
+      <property name="JAVA_HOME_32" value="${env.JAVA_HOME_32}" />
+  
 			<var name="java_home" value="${JAVA_HOME}" />
 			<if>
 				<and>
@@ -33,51 +36,61 @@
 					</if>
 				</then>
 			</if>
-
-			<exec dir="@{dir}" executable="${FLEX_HOME}/bin/@{exec}"
-				failonerror="true">
-				<env key="JAVA_HOME" value="${java_home}" />
-				<arg value="+flexlib=${FLEX_HOME}/frameworks" />
-				<args />
-			</exec>
-		</sequential>
-	</macrodef>
-
-	<macrodef name="compc">
-		<attribute name="dir" default="${basedir}" />
-		<element name="args" implicit="true" />
-		<sequential>
-			<var name="exec" value="compc" />
-			<if>
+            
+            <var name="vExec" value="@{exec}"/>
+            <if>
 				<or>
 					<equals arg1="${osfamily}" arg2="win" />
 					<equals arg1="${osfamily}" arg2="windows" />
 				</or>
 				<then>
-					<var name="exec" value="compc.exe" />
+                    <if>
+                        <available file="@{flexHome}/bin/@{exec}.exe"/>
+                        <then>
+                            <var name="vExec" value="@{exec}.exe" />
+                        </then>
+                        <elseif>
+                            <available file="@{flexHome}/bin/@{exec}.bat"/>
+                            <then>
+                                <var name="vExec" value="@{exec}.bat" />
+                            </then>
+                        </elseif>
+                        <else>
+                            <fail message="Can not find proper executable for ''@{exec}'' in directory ''@{flexHome}/bin''"/>
+                        </else>
+                    </if>
 				</then>
 			</if>
-			<flex exec="${exec}" dir="@{dir}">
+
+			<exec dir="@{dir}" executable="@{flexHome}/bin/${vExec}"
+				failonerror="true">
+				<env key="JAVA_HOME" value="${java_home}" />
+				<args />
+			</exec>
+            
+            <var name="vExec" unset="true"/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="compc">
+        <attribute name="flexHome" default="${env.FLEX_HOME}" />
+		<attribute name="dir" default="${basedir}" />
+		<element name="args" implicit="true" />
+		<sequential>
+			<flex exec="compc" dir="@{dir}" flexHome="@{flexHome}">
+                <arg value="+flexlib=@{flexHome}/frameworks" />
 				<args />
 			</flex>
 		</sequential>
 	</macrodef>
 
 	<macrodef name="mxmlc">
+        <attribute name="flexHome" default="${env.FLEX_HOME}" />
 		<attribute name="dir" default="${basedir}" />
 		<element name="args" implicit="true" />
 		<sequential>
-			<var name="exec" value="mxmlc" />
-			<if>
-				<or>
-					<equals arg1="${osfamily}" arg2="win" />
-					<equals arg1="${osfamily}" arg2="windows" />
-				</or>
-				<then>
-					<var name="exec" value="mxmlc.exe" />
-				</then>
-			</if>
-			<flex exec="${exec}" dir="@{dir}">
+            <flex exec="mxmlc" dir="@{dir}" flexHome="@{flexHome}">
+                <arg value="+flexlib=@{flexHome}/frameworks" />
 				<args />
 			</flex>
 		</sequential>

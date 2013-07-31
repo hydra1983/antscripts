@@ -1,0 +1,20 @@
+<project name="jar">
+	<import>
+		<url url="${SCRIPTS_BASE}/core.xml" />
+	</import>
+
+	<macrodef name="loadmf">
+        <attribute name="jar"/>
+        <attribute name="prefix" default=""/>
+        <sequential>
+            <loadproperties>
+                <!-- Load the manifest entries -->
+                <zipentry zipfile="@{jar}" name="META-INF/MANIFEST.MF"/>
+                <!-- Add the prefix -->
+                <filterchain>
+                    <prefixlines prefix="@{prefix}"/>
+                </filterchain>
+            </loadproperties>
+        </sequential>
+    </macrodef>
+</project>
