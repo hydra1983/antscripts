@@ -178,4 +178,30 @@
 		    project.setProperty( attributes.get( "property" ),s);
 		]]>
 	</scriptdef>
+
+	<scriptdef language="javascript" name="substring">
+		<attribute name="text" />
+	    <attribute name="start" />
+	    <attribute name="end" />
+	    <attribute name="property" />
+	    <![CDATA[
+	       var text = attributes.get("text");
+	       var start = attributes.get("start");
+	       var end = attributes.get("end") || text.length();
+	       project.setProperty(attributes.get("property"), text.substring(start, end));
+	    ]]>
+	</scriptdef>
+
+	<scriptdef language="javascript" name="replacestring">
+		<attribute name="text" />
+	    <attribute name="pattern" />
+	    <attribute name="replacement" />
+	    <attribute name="property" />
+	    <![CDATA[
+	       var text = attributes.get("text");
+	       var pattern = attributes.get("pattern");
+	       var replacement = attributes.get("replacement");
+	       project.setProperty(attributes.get("property"), text.replace(pattern, replacement));
+	    ]]>
+	</scriptdef>
 </project>

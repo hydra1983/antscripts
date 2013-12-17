@@ -1,0 +1,99 @@
+<project name="xml">
+	<import>
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+		<url url="${SCRIPTS_BASE}/string.xml" />
+	</import>
+
+	<macrodef name="loadpropertyfile">
+		<attribute name="file"/>
+		<attribute name="tmpdir" default="${basedir}/tmp"/>
+		<attribute name="encoding" default="UTF-8"/>
+		<sequential>
+			<do-loadpropertyfile file="@{file}" tmpdir="@{tmpdir}"/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="loadxmlpropertyfile">
+		<attribute name="file"/>
+		<attribute name="tmpdir" default="${basedir}/tmp"/>
+		<attribute name="encoding" default="UTF-8"/>
+		<sequential>
+			<do-loadpropertyfile file="@{file}" tmpdir="@{tmpdir}" xml="true" encoding="@{encoding}"/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="do-loadpropertyfile">
+		<attribute name="file"/>
+		<attribute name="tmpdir" default="${basedir}/tmp"/>
+		<attribute name="xml" default="false"/>
+		<attribute name="encoding" default="UTF-8"/>
+		<sequential>
+			<if>
+				<not>
+					<resourceexists>
+						<file file="@{tmpdir}"/>
+					</resourceexists>
+				</not>
+				<then>
+					<mkdir dir="@{tmpdir}"/>
+				</then>
+			</if>
+
+			<local name="basedir_unix"/>
+			<pathconvert property="basedir_unix" targetos="unix">
+				<path location="${basedir}"/>
+			</pathconvert>
+
+			<local name="tmpdir_unix"/>
+			<pathconvert property="tmpdir_unix" targetos="unix">
+				<path location="@{tmpdir}"/>
+			</pathconvert>
+
+			<local name="file_unix"/>
+			<pathconvert property="file_unix" targetos="unix">
+				<path location="@{file}"/>
+			</pathconvert>
+
+			<local name="dirname"/>
+			<dirname file="@{file}" property="dirname"/>
+
+			<local name="dirname_unix"/>
+			<pathconvert property="dirname_unix" targetos="unix">
+				<path location="${dirname}"/>
+			</pathconvert>
+
+			<if>
+				<resourceexists>
+					<file file="${dirname_unix}"/>
+				</resourceexists>
+				<then>
+					<local name="basename"/>
+					<basename file="${file_unix}" property="basename"/>
+
+					<local name="relative_dirname_unix"/>
+					<replacestring text="${dirname_unix}" 
+						pattern="${basedir_unix}" 
+						replacement=""
+						property="relative_dirname_unix"/>
+
+					<local name="new_dirname_unix"/>
+					<property name="new_dirname_unix" value="${tmpdir_unix}${relative_dirname_unix}"/>
+
+					<native2ascii encoding="@{encoding}" src="${dirname_unix}" dest="${new_dirname_unix}">
+						<mapper type="glob" from="${basename}" to="${basename}"/>
+					</native2ascii>
+					<if>
+						<istrue value="@{xml}"/>
+						<then>
+							<xmlproperty file="${new_dirname_unix}/${basename}"/>
+						</then>
+						<else>
+							<property file="${new_dirname_unix}/${basename}"/>
+						</else>
+					</if>
+					
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
+</project>
