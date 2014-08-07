@@ -24,3 +24,7 @@ Github
 	</target>
 </project>
 ```
+
+For ```xml```
+
+See http://www.oopsconsultancy.com/software/xmltask/ and https://today.java.net/pub/a/today/2006/11/01/xml-manipulation-using-xmltask.html#paths-and-namespaces
