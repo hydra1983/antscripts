@@ -38,12 +38,18 @@
 	if you want to set "fileName", you must set "outputDir" as well.
 	You must set one of "artifact","artifacts","artifactFile","artifactText","artifactFiles"
 	-->
-	<macrodef name="download-artifacts">
+	<macrodef name="download-artifacts">		
 		<!--
 		outputdir:
 			The default directory to copy artifact files to.
 		-->
 		<attribute name="outputdir" default="${basedir}" />
+
+		<!--
+		repositories:
+			
+		-->
+		<element name="repositories" default=""/>
 		
 		<!--
 		dryrun:
@@ -126,6 +132,7 @@
 		"#" is used to comment a line.
 		-->
 		<element name="artifactFiles" implicit="true" optional="true" />
+
 		<sequential>
 			<var name="vArtifacts" value="" />
 
@@ -434,6 +441,8 @@
 								<replacestring from="@%{action}" to="copy" />
 								<replacestring from="@%{dependencies}"
 								               to="${vCopyDependencies}" />
+								<replacestring from="@%{remoteRepositories}"
+								               to="@{repositories}" />
 							</tokenfilter>
 						</filterchain>
 					</loadresource>

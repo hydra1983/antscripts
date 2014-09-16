@@ -8,5 +8,6 @@
 		<artifactItems>
 			@%{dependencies}
 		</artifactItems>
+		<remoteRepositories>@%{remoteRepositories}</remoteRepositories>
 	</configuration>
 </execution>
