@@ -49,7 +49,7 @@
 		repositories:
 			
 		-->
-		<element name="repositories" default=""/>
+		<attribute name="repositories" default=""/>
 		
 		<!--
 		dryrun:
