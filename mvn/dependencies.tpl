@@ -19,4 +19,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	@%{repositories}	
 </project>

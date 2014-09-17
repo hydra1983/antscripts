@@ -428,6 +428,29 @@
 				</sequential>
 			</for>
 
+			<var name="vRepositories" value=""/>
+			<if>
+				<not>
+					<equals arg1="@{repositories}" arg2="" />
+				</not>
+				<then>
+					<var name="vRepositories" value="${vRepositories}&lt;repositories&gt;"/>
+					<for list="@{repositories}"
+					     delimiter=";"
+					     param="pRepositoryUrl">
+						<sequential>
+							<local name="repositoryId" />
+							<uuid property="repositoryId" />
+							<var name="vRepositories" value="${vRepositories}${line.separator}    &lt;repository&gt;"/>
+							<var name="vRepositories" value="${vRepositories}${line.separator}        &lt;id&gt;${repositoryId}&gt;&lt;/id&gt;" />
+							<var name="vRepositories" value="${vRepositories}${line.separator}        &lt;url&gt;@{pRepositoryUrl}&lt;/url&gt;"/>
+							<var name="vRepositories" value="${vRepositories}${line.separator}    &lt;/repository&gt;"/>		
+						</sequential>
+					</for>
+					<var name="vRepositories" value="${vRepositories}${line.separator}&lt;/repositories&gt;"/>
+				</then>
+			</if>
+
 			<local name="copyExec" />
 			<if>
 				<not>
@@ -441,8 +464,8 @@
 								<replacestring from="@%{action}" to="copy" />
 								<replacestring from="@%{dependencies}"
 								               to="${vCopyDependencies}" />
-								<replacestring from="@%{remoteRepositories}"
-								               to="@{repositories}" />
+								<replacestring from="@%{repositories}"
+								               to="${vRepositories}" />
 							</tokenfilter>
 						</filterchain>
 					</loadresource>
@@ -510,6 +533,14 @@
 					<get src="${SCRIPTS_BASE}/mvn/dependencies.tpl"
 					     dest="${pomFile}" />
 
+					<if>
+						<not>
+							<equals arg1="@{repositories}" arg2="" />
+						</not>
+						<then>
+							
+						</then>
+					</if>
 					<replace file="${pomFile}">
 						<replacefilter token="@%{executions}" value="${vExecs}" />
 					</replace>
