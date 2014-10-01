@@ -1,0 +1,26 @@
+<project name="git">
+	<import>
+		<url url="${SCRIPTS_BASE}/linux/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<macrodef name="git">
+		<attribute name="exec"/>
+		<attribute name="dir" default="${basedir}"/>
+		<attribute name="debug" default="false"/>
+		<sequential>
+			<var name="cmd" value="git @{exec}" />
+
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<echo message="[GIT] ${cmd}"/>
+				</then>
+			</if>
+
+			<run exec="${cmd}" dir="@{dir}" />
+			
+			<var name="cmd" unset="true"/>
+		</sequential>
+	</macrodef>
+</project>
