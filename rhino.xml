@@ -101,7 +101,7 @@ ${vScript}
 			<local name="scriptsBase"/>
 			<propertyregex property="scriptsBase"
 				  input="${SCRIPTS_BASE}"
-				  regexp="file\:\/\/\/(.*)"
+				  regexp="file\:\/\/(.*)"
 				  select="\1"
 				  casesensitive="false" />
 			
