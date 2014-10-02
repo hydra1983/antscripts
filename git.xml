@@ -6,10 +6,18 @@
 
 	<macrodef name="git">
 		<attribute name="exec"/>
+		<attribute name="ssh" default=""/>
 		<attribute name="dir" default="${basedir}"/>
 		<attribute name="debug" default="false"/>
 		<sequential>
-			<var name="cmd" value="git @{exec}" />
+			<var name="cmd" value="" />
+			<if>
+				<equals arg1="@{ssh}" arg2=""/>
+				<then>
+					<var name="cmd" value="GIT_SSH=@{ssh}" />
+				</then>
+			</if>
+			<var name="cmd" value="${cmd} git @{exec}" />
 
 			<if>
 				<istrue value="@{debug}"/>
