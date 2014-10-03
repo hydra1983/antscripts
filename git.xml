@@ -41,8 +41,8 @@
 	</macrodef>
 
 	<macrodef name="git-download">
-		<attribute name="repo"/>
-		<attribute name="base"/>
+		<attribute name="repository"/>
+		<attribute name="workspace"/>
 		<attribute name="remote" default="origin"/>
 		<attribute name="branch" default="master"/>
 		<attribute name="privateKey" default=""/>		
@@ -50,23 +50,23 @@
 		<sequential>
 			<if>
 				<not><resourceexists>
-					<file file="${base}"/>
+					<file file="${workspace}"/>
 				</resourceexists></not>
 				<then>
-					<mkdir dir="${base}"/>		
+					<mkdir dir="${workspace}"/>		
 				</then>
 			</if>	
 			
 			<if>
 				<resourceexists>
-					<file file="${base}/.git"/>
+					<file file="${workspace}/.git"/>
 				</resourceexists>
 				<then>
-					<git dir="${base}" exec="pull @{remote} @{branch}" 
+					<git dir="${workspace}" exec="pull @{remote} @{branch}" 
 						debug="@{debug}" privateKey="@{privateKey}"/>
 				</then>
 				<else>
-					<git dir="${base}" exec="clone @{repo} ." 
+					<git dir="${workspace}" exec="clone @{repository} ." 
 						debug="@{debug}" privateKey="@{privateKey}"/>
 				</else>
 			</if>
