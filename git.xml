@@ -12,7 +12,9 @@
 		<sequential>
 			<var name="cmd" value="" />
 			<if>
-				<equals arg1="@{ssh}" arg2=""/>
+				<not>
+					<equals arg1="@{ssh}" arg2=""/>
+				</not>
 				<then>
 					<var name="cmd" value="GIT_SSH=@{ssh}" />
 				</then>
