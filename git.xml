@@ -2,24 +2,30 @@
 	<import>
 		<url url="${SCRIPTS_BASE}/linux/core.xml" />
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
-	</import>
+	</import>	
+
+	<get src="${SCRIPTS_BASE}/git/git-wrapper.sh"
+	     dest="${SCRIPTS_TMP_DIR}/git-wrapper.sh"
+	     usetimestamp="true" />
 
 	<macrodef name="git">
 		<attribute name="exec"/>
-		<attribute name="ssh" default=""/>
+		<attribute name="privateKey" default=""/>
 		<attribute name="dir" default="${basedir}"/>
 		<attribute name="debug" default="false"/>
-		<sequential>
-			<var name="cmd" value="" />
+		<sequential>	
+			<run exec="chmod +x ${SCRIPTS_TMP_DIR}/git-wrapper.sh"/>		
+
+			<var name="cmd" value="${SCRIPTS_TMP_DIR}/git-wrapper.sh" />
 			<if>
 				<not>
-					<equals arg1="@{ssh}" arg2=""/>
+					<equals arg1="@{privateKey}" arg2=""/>
 				</not>
 				<then>
-					<var name="cmd" value="GIT_SSH=&quot;@{ssh}&quot;" />
+					<var name="cmd" value="${cmd} -i @{privateKey}" />
 				</then>
 			</if>
-			<var name="cmd" value="${cmd} git @{exec}" />
+			<var name="cmd" value="${cmd} @{exec}" />
 
 			<if>
 				<istrue value="@{debug}"/>
