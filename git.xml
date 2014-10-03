@@ -39,4 +39,37 @@
 			<var name="cmd" unset="true"/>
 		</sequential>
 	</macrodef>
+
+	<macrodef name="git-download">
+		<attribute name="repo"/>
+		<attribute name="base"/>
+		<attribute name="remote" default="origin"/>
+		<attribute name="branch" default="master"/>
+		<attribute name="privateKey" default=""/>		
+		<attribute name="debug" default="false"/>
+		<sequential>
+			<if>
+				<not><resourceexists>
+					<file file="${base}"/>
+				</resourceexists></not>
+				<then>
+					<mkdir dir="${base}"/>		
+				</then>
+			</if>	
+			
+			<if>
+				<resourceexists>
+					<file file="${base}/.git"/>
+				</resourceexists>
+				<then>
+					<git dir="${base}" exec="pull @{remote} @{branch}" 
+						debug="@{debug}" privateKey="@{privateKey}"/>
+				</then>
+				<else>
+					<git dir="${base}" exec="clone @{repo} ." 
+						debug="@{debug}" privateKey="@{privateKey}"/>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
 </project>
