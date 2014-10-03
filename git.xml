@@ -16,7 +16,7 @@
 					<equals arg1="@{ssh}" arg2=""/>
 				</not>
 				<then>
-					<var name="cmd" value="GIT_SSH=@{ssh}" />
+					<var name="cmd" value="GIT_SSH=&quot;@{ssh}&quot;" />
 				</then>
 			</if>
 			<var name="cmd" value="${cmd} git @{exec}" />
