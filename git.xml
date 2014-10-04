@@ -30,7 +30,7 @@
 			<if>
 				<istrue value="@{debug}"/>
 				<then>
-					<echo message="[GIT](${dir}): ${cmd}"/>
+					<echo message="[GIT](@{dir}): ${cmd}"/>
 				</then>
 			</if>
 
@@ -50,23 +50,23 @@
 		<sequential>
 			<if>
 				<not><resourceexists>
-					<file file="${workspace}"/>
+					<file file="@{workspace}"/>
 				</resourceexists></not>
 				<then>
-					<mkdir dir="${workspace}"/>		
+					<mkdir dir="@{workspace}"/>		
 				</then>
 			</if>	
 			
 			<if>
 				<resourceexists>
-					<file file="${workspace}/.git"/>
+					<file file="@{workspace}/.git"/>
 				</resourceexists>
 				<then>
-					<git dir="${workspace}" exec="pull @{remote} @{branch}" 
+					<git dir="@{workspace}" exec="pull @{remote} @{branch}" 
 						debug="@{debug}" privateKey="@{privateKey}"/>
 				</then>
 				<else>
-					<git dir="${workspace}" exec="clone @{repository} ." 
+					<git dir="@{workspace}" exec="clone @{repository} ." 
 						debug="@{debug}" privateKey="@{privateKey}"/>
 				</else>
 			</if>
