@@ -73,7 +73,7 @@
 		dir:
 			The working directory.
 		-->
-		<attribute name="dir" default="${basedir}/target" />
+		<attribute name="dir" default="${env.TMP}" />
 		
 		<!--
 		quiet:
