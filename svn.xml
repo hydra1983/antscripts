@@ -12,6 +12,8 @@
         <attribute name="workspace" />
         <attribute name="username" default="" />
         <attribute name="password" default="" />
+        <attribute name="scmUsername" default="" />
+        <attribute name="scmPassword" default="" />
         <attribute name="debug" default="false" />
         <sequential>
             <if>
@@ -25,17 +27,37 @@
                 </then>
             </if>
 
+            <var name="vUsername" value="@{scmUsername}"/>
+            <var name="vPassword" value="@{scmPassword}"/>
+
+            <if>
+            	<isset_ property="@{username}"/>
+            	<then>
+								<var name="vUsername" value="@{username}"/>
+            	</then>
+            </if>
+
+						<if>
+            	<isset_ property="@{password}"/>
+            	<then>
+								<var name="vPassword" value="@{password}"/>
+            	</then>
+            </if>
+
             <if>
                 <resourceexists>
                     <file file="@{workspace}/.svn" />
                 </resourceexists>
                 <then>
-                    <svn dir="@{workspace}" exec="up" debug="@{debug}" scmUsername="@{username}" scmPassword="@{password}" />
+                    <svn dir="@{workspace}" exec="up" debug="@{debug}" scmUsername="@{vUsername}" scmPassword="@{vPassword}" />
                 </then>
                 <else>
-                    <svn dir="@{workspace}" exec="co @{repository} ." debug="@{debug}" scmUsername="@{username}" scmPassword="@{password}" />
+                    <svn dir="@{workspace}" exec="co @{repository} ." debug="@{debug}" scmUsername="@{vUsername}" scmPassword="@{vPassword}" />
                 </else>
             </if>
+
+            <var name="vUsername" unset="true"/>
+            <var name="vPassword" unset="true"/>
         </sequential>
     </macrodef>
 </project>
