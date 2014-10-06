@@ -1,0 +1,30 @@
+<project name="git-win">
+	<import>
+		<url url="${SCRIPTS_BASE}/win/core.xml" />
+		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
+	</import>
+
+	<macrodef name="git">
+		<attribute name="exec"/>
+		<!-- TODO(edison): create git-wrapper.bat -->
+		<attribute name="privateKey" default=""/>
+		<attribute name="dir" default="${basedir}"/>
+		<attribute name="debug" default="false"/>
+		<sequential>	
+			<warn message="'privateKey' is not supported right now."/>
+			<var name="cmd" value="git" />
+			<var name="cmd" value="${cmd} @{exec}" />
+
+			<if>
+				<istrue value="@{debug}"/>
+				<then>
+					<debug message="@{dir}: ${cmd}"/>
+				</then>
+			</if>
+
+			<run exec="${cmd}" dir="@{dir}" />
+			
+			<var name="cmd" unset="true"/>
+		</sequential>
+	</macrodef>
+</project>

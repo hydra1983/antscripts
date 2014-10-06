@@ -4,17 +4,33 @@
 		<url url="${SCRIPTS_BASE}/ant-contrib.xml" />
 	</import>
 
+	<get src="${SCRIPTS_BASE}/git/git-wrapper.sh"
+	     dest="${SCRIPTS_TMP_DIR}/git-wrapper.sh"
+	     usetimestamp="true" />
+
 	<macrodef name="git">
 		<attribute name="exec"/>
+		<attribute name="privateKey" default=""/>
 		<attribute name="dir" default="${basedir}"/>
 		<attribute name="debug" default="false"/>
-		<sequential>
-			<var name="cmd" value="git @{exec}" />
+		<sequential>	
+			<run exec="chmod +x ${SCRIPTS_TMP_DIR}/git-wrapper.sh"/>		
+
+			<var name="cmd" value="${SCRIPTS_TMP_DIR}/git-wrapper.sh" />
+			<if>
+				<not>
+					<equals arg1="@{privateKey}" arg2=""/>
+				</not>
+				<then>
+					<var name="cmd" value="${cmd} -i @{privateKey}" />
+				</then>
+			</if>
+			<var name="cmd" value="${cmd} @{exec}" />
 
 			<if>
 				<istrue value="@{debug}"/>
 				<then>
-					<echo message="[GIT] ${cmd}"/>
+					<echo message="[GIT](@{dir}): ${cmd}"/>
 				</then>
 			</if>
 
