@@ -6,4 +6,36 @@
 	<import>
 		<url url="${SCRIPTS_BASE}/${osfamily}/svn.xml" />
 	</import>
+
+	<macrodef name="svn-download">
+		<attribute name="repository"/>
+		<attribute name="workspace"/>
+		<attribute name="username" default=""/>		
+		<attribute name="password" default=""/>
+		<attribute name="debug" default="false"/>
+		<sequential>
+			<if>
+				<not><resourceexists>
+					<file file="@{workspace}"/>
+				</resourceexists></not>
+				<then>
+					<mkdir dir="@{workspace}"/>		
+				</then>
+			</if>	
+			
+			<if>
+				<resourceexists>
+					<file file="@{workspace}/.svn"/>
+				</resourceexists>
+				<then>
+					<svn dir="@{workspace}" exec="up" 
+						debug="@{debug}" scmUsername="@{username}" scmPassword="@{password}"/>
+				</then>
+				<else>
+					<<svn dir="@{workspace}" exec="co @{repository} ." 
+						debug="@{debug}" scmUsername="@{username}" scmPassword="@{password}"/>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
 </project>

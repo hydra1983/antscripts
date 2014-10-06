@@ -30,7 +30,7 @@
 			<if>
 				<istrue value="@{debug}"/>
 				<then>
-					<echo message="[GIT](@{dir}): ${cmd}"/>
+					<debug message="[git] @{dir}: ${cmd}"/>
 				</then>
 			</if>
 

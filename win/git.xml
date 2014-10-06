@@ -11,14 +11,14 @@
 		<attribute name="dir" default="${basedir}"/>
 		<attribute name="debug" default="false"/>
 		<sequential>	
-			<warn message="'privateKey' is not supported right now."/>
+			<warn message="[git] 'privateKey' is not supported right now."/>
 			<var name="cmd" value="git" />
 			<var name="cmd" value="${cmd} @{exec}" />
 
 			<if>
 				<istrue value="@{debug}"/>
 				<then>
-					<debug message="@{dir}: ${cmd}"/>
+					<debug message="[git] @{dir}: ${cmd}"/>
 				</then>
 			</if>
 
