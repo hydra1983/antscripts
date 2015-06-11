@@ -19,11 +19,97 @@
 					<echo message="[run] CMD /S /C &quot;@{exec}&quot;"/>
 				</then>
 			</if>
-			<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
-        <arg value="/S" />
-				<arg value="/C" />
-				<arg value="&quot;@{exec}&quot;" />
-			</exec>
+
+			<if>
+				<and>
+					<not><equals arg1="@{output}" arg2=""/></not>
+					<not><equals arg1="@{error}" arg2=""/></not>
+					<not><equals arg1="@{result}" arg2=""/></not>
+				</and>
+				<then>
+					<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
+		        <arg value="/S" />
+						<arg value="/C" />
+						<arg value="&quot;@{exec}&quot;" />
+					</exec>
+				</then>
+				<elseif>
+					<and>
+						<not><equals arg1="@{output}" arg2=""/></not>
+						<not><equals arg1="@{error}" arg2=""/></not>
+					</and>
+					<then>
+						<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}">
+			        <arg value="/S" />
+							<arg value="/C" />
+							<arg value="&quot;@{exec}&quot;" />
+						</exec>
+					</then>
+				</elseif>
+				<elseif>
+					<and>
+						<not><equals arg1="@{error}" arg2=""/></not>
+						<not><equals arg1="@{result}" arg2=""/></not>
+					</and>
+					<then>
+						<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" errorproperty="@{error}" resultproperty="@{result}">
+			        <arg value="/S" />
+							<arg value="/C" />
+							<arg value="&quot;@{exec}&quot;" />
+						</exec>
+					</then>
+				</elseif>
+				<elseif>
+					<and>
+						<not><equals arg1="@{output}" arg2=""/></not>
+						<not><equals arg1="@{result}" arg2=""/></not>
+					</and>
+					<then>
+						<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}" resultproperty="@{result}">
+			        <arg value="/S" />
+							<arg value="/C" />
+							<arg value="&quot;@{exec}&quot;" />
+						</exec>
+					</then>
+				</elseif>
+				<elseif>
+					<not><equals arg1="@{output}" arg2=""/></not>
+					<then>
+						<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}">
+			        <arg value="/S" />
+							<arg value="/C" />
+							<arg value="&quot;@{exec}&quot;" />
+						</exec>
+					</then>
+				</elseif>
+				<elseif>
+					<not><equals arg1="@{error}" arg2=""/></not>
+					<then>
+						<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" errorproperty="@{error}">
+			        <arg value="/S" />
+							<arg value="/C" />
+							<arg value="&quot;@{exec}&quot;" />
+						</exec>
+					</then>
+				</elseif>
+				<elseif>
+					<not><equals arg1="@{result}" arg2=""/></not>
+					<then>
+						<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}" resultproperty="@{result}">
+			        <arg value="/S" />
+							<arg value="/C" />
+							<arg value="&quot;@{exec}&quot;" />
+						</exec>
+					</then>
+				</elseif>
+				<else>
+					<exec executable="CMD" failonerror="@{failonerror}" dir="@{dir}">
+		        <arg value="/S" />
+						<arg value="/C" />
+						<arg value="&quot;@{exec}&quot;" />
+					</exec>
+				</else>
+			</if>
 		</sequential>
 	</macrodef>
 
