@@ -8,6 +8,9 @@
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="debug" default="false" />
+		<attribute name="output" default="" />
+		<attribute name="error" default="" />
+		<attribute name="result" default="" />
 		<sequential>
 			<if>
 				<istrue value="@{debug}"/>
@@ -15,20 +18,23 @@
 					<echo message="[run] CMD /S /C &quot;@{exec}&quot;"/>
 				</then>
 			</if>
-			<exec executable="CMD" failonerror="true" dir="@{dir}">
+			<exec executable="CMD" failonerror="true" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
         <arg value="/S" />
 				<arg value="/C" />
 				<arg value="&quot;@{exec}&quot;" />
 			</exec>
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="sudo">
 		<attribute name="exec" />
 		<attribute name="dir" default="${basedir}" />
 		<attribute name="debug" default="false" />
+		<attribute name="output" default="" />
+		<attribute name="error" default="" />
+		<attribute name="result" default="" />
 		<sequential>
-			<run exec="@{exec}" dir="@{dir}" debug="@{debug}"/>
+			<run exec="@{exec}" dir="@{dir}" debug="@{debug}" output="@{output}" error="@{error}" result="@{result}"/>
 		</sequential>
 	</macrodef>
 </project>
