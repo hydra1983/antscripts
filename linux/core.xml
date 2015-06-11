@@ -11,6 +11,7 @@
 		<attribute name="output" default="" />
 		<attribute name="error" default="" />
 		<attribute name="result" default="" />
+		<attribute name="failonerror" default="true" />
 		<sequential>
 			<if>
 				<istrue value="@{debug}"/>
@@ -18,7 +19,7 @@
 					<echo message="[run] /bin/bash -c @{exec}"/>
 				</then>
 			</if>
-			<exec executable="/bin/bash" failonerror="true" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
+			<exec executable="/bin/bash" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
 				<arg value="-c" />
 				<arg value="@{exec}" />
 			</exec>
@@ -32,8 +33,9 @@
 		<attribute name="output" default="" />
 		<attribute name="error" default="" />
 		<attribute name="result" default="" />
+		<attribute name="failonerror" default="true" />
 		<sequential>
-			<exec executable="sudo" failonerror="true" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
+			<exec executable="sudo" failonerror="@{failonerror}" dir="@{dir}" outputproperty="@{output}" errorproperty="@{error}" resultproperty="@{result}">
 				<arg value="/bin/bash" />
 				<arg value="-c" />
 				<arg value="@{exec}" />
